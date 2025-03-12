@@ -24,10 +24,10 @@ local settings are attached to a specific configuration.
 background and ignore label), computed over all training cases. Used by [CT normalization scheme](explanation_normalization.md).
 - `image_reader_writer`: Name of the image reader/writer class that should be used with this dataset. You might want 
 to change this if, for example, you would like to run inference with files that have a different file format. The 
-class that is named here must be located in nnunetv2.imageio!
+class that is named here must be located in longiseg.imageio!
 - `label_manager`: The name of the class that does label handling. Take a look at 
-nnunetv2.utilities.label_handling.LabelManager to see what it does. If you decide to change it, place your version 
-in nnunetv2.utilities.label_handling!
+longiseg.utilities.label_handling.LabelManager to see what it does. If you decide to change it, place your version 
+in longiseg.utilities.label_handling!
 - `transpose_forward`: nnU-Net transposes the input data so that the axes with the highest resolution (lowest spacing) 
 come last. This is because the 2D U-Net operates on the trailing dimensions (more efficient slicing due to internal 
 memory layout of arrays). Future work might move this setting to affect only individual configurations. 
@@ -58,21 +58,21 @@ Local settings:
 - `batch_dice`: whether to use batch dice (pretend all samples in the batch are one image, compute dice loss over that)
 or not (each sample in the batch is a separate image, compute dice loss for each sample and average over samples)
 - `preprocessor_name`: Name of the preprocessor class used for running preprocessing. Class must be located in 
-nnunetv2.preprocessing.preprocessors
+longiseg.preprocessing.preprocessors
 - `use_mask_for_norm`: whether to use the nonzero mask for normalization or not (relevant for BraTS and the like, 
 probably False for all other datasets). Interacts with ImageNormalization class
 - `normalization_schemes`: mapping of channel identifier to ImageNormalization class name. ImageNormalization 
-classes must be located in nnunetv2.preprocessing.normalization. Also see [here](explanation_normalization.md)
+classes must be located in longiseg.preprocessing.normalization. Also see [here](explanation_normalization.md)
 - `resampling_fn_data`: name of resampling function to be used for resizing image data. resampling function must be 
-callable(data, current_spacing, new_spacing, **kwargs). It must be located in nnunetv2.preprocessing.resampling
+callable(data, current_spacing, new_spacing, **kwargs). It must be located in longiseg.preprocessing.resampling
 - `resampling_fn_data_kwargs`: kwargs for resampling_fn_data
 - `resampling_fn_probabilities`: name of resampling function to be used for resizing predicted class probabilities/logits. 
 resampling function must be `callable(data: Union[np.ndarray, torch.Tensor], current_spacing, new_spacing, **kwargs)`. It must be located in 
-nnunetv2.preprocessing.resampling
+longiseg.preprocessing.resampling
 - `resampling_fn_probabilities_kwargs`: kwargs for resampling_fn_probabilities
 - `resampling_fn_seg`: name of resampling function to be used for resizing segmentation maps (integer: 0, 1, 2, 3, etc). 
 resampling function must be callable(data, current_spacing, new_spacing, **kwargs). It must be located in 
-nnunetv2.preprocessing.resampling
+longiseg.preprocessing.resampling
 - `resampling_fn_seg_kwargs`: kwargs for resampling_fn_seg
 - `network_arch_class_name`: UNet class name, can be used to integrate custom dynamic architectures
 - `UNet_base_num_features`: The number of starting features for the UNet architecture. Default is 32. Default: Features
