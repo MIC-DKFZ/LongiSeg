@@ -59,4 +59,13 @@ For more details on installation requirements and dataset structure, refer to th
 LongiSeg is fully compatible with nnU-Net and can be installed alongside it in the same environment. This allows users to seamlessly reuse existing nnU-Net structures, datasets, and preprocessing pipelines without modification.
 
 # Acknowledgements
+<img src="documentation/assets/HIDSS4Health_Logo_RGB.png" height="100px" />
+
 <img src="documentation/assets/dkfz_logo.png" height="100px" />
+
+LongiSeg is developed and maintained by the [Division of Medical Image Computing](https://www.dkfz.de/en/mic/index.php) at the 
+[German Cancer Research Center (DKFZ)](https://www.dkfz.de/en/index.html), supported by the Helmholtz Association under the joint research school “HIDSS4Health – Helmholtz Information and Data Science School for Health.
+
+nnU-Net is developed and maintained by the Applied Computer Vision Lab (ACVL) of [Helmholtz Imaging](http://helmholtz-imaging.de) 
+and the [Division of Medical Image Computing](https://www.dkfz.de/en/mic/index.php) at the 
+[German Cancer Research Center (DKFZ)](https://www.dkfz.de/en/index.html).
