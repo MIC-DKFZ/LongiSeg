@@ -1,6 +1,7 @@
 import inspect
 import os
 from copy import deepcopy
+import shutil
 from typing import Tuple, Union, List
 
 import torch
@@ -170,6 +171,7 @@ class LongiSegPredictor(nnUNetPredictor):
             #     f' they are located via folder_with_segs_from_prev_stage'
 
         patient_json = load_json(patient_file)
+        shutil.copy(patient_file, join(output_folder, 'patients.json'))
 
         # sort out input and output filenames
         list_of_lists, output_filename_truncated, seg_from_prev_stage_files = \
