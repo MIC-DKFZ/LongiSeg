@@ -515,39 +515,6 @@ class nnUNetTrainer(object):
             self.print_to_log_file("Unable to plot network architecture: nnUNet_compile is enabled!")
             return
 
-        if self.local_rank == 0:
-            try:
-                # raise NotImplementedError('hiddenlayer no longer works and we do not have a viable alternative :-(')
-                # pip install git+https://github.com/saugatkandel/hiddenlayer.git
-
-                # from torchviz import make_dot
-                # # not viable.
-                # make_dot(tuple(self.network(torch.rand((1, self.num_input_channels,
-                #                                         *self.configuration_manager.patch_size),
-                #                                        device=self.device)))).render(
-                #     join(self.output_folder, "network_architecture.pdf"), format='pdf')
-                # self.optimizer.zero_grad()
-
-                # broken.
-
-                import hiddenlayer as hl
-                g = hl.build_graph(self.network,
-                                   torch.rand((1, self.num_input_channels,
-                                               *self.configuration_manager.patch_size),
-                                              device=self.device),
-                                   transforms=None)
-                g.save(join(self.output_folder, "network_architecture.pdf"))
-                del g
-            except Exception as e:
-                self.print_to_log_file("Unable to plot network architecture:")
-                self.print_to_log_file(e)
-
-                # self.print_to_log_file("\nprinting the network instead:\n")
-                # self.print_to_log_file(self.network)
-                # self.print_to_log_file("\n")
-            finally:
-                empty_cache(self.device)
-
     def do_split(self):
         """
         The default split is a 5 fold CV on all available training cases. nnU-Net will create a split (it is seeded,

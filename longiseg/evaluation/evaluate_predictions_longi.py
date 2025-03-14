@@ -219,7 +219,7 @@ def compute_longi_metrics_on_folder(folder_ref: str, folder_pred: str, output_fi
 
 def compute_longi_metrics_on_folder2(folder_ref: str, folder_pred: str, dataset_json_file: str, 
                                plans_file: str,
-                               patients_file: str,
+                               patients_file: str = None,
                                output_file: str = None,
                                num_processes: int = default_num_processes,
                                chill: bool = False):
