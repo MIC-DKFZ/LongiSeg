@@ -52,6 +52,9 @@ Other options for training are available as well (`LongiSeg_train -h`).
 
 ## Inference
 Inference with LongiSeg works in a similar way to the [nnU-Net inference](how_to_use_nnunet.md#run-inference), with the added requirement of specifying a patient file (-pat) in either the `LongiSeg_predict` or `LongiSeg_predict_from_modelfolder` commands. The patient file needs to detail the patient structure in the same way as during training. Only cases present in both the input folder **and** `patients.json` will be processed during inference!
+```bash
+LongiSeg_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -path /path/to/patients.json -d DATASET_ID
+```
 
 ## Evaluation
 By default LongiSeg performs nnU-Net's standard evaluation on the 5-fold cross validation. This, however, does not account for individual patients and only calculates a handful of metrics. LongiSeg extends nnU-Net’s evaluation by incorporating additional metrics that provide a more comprehensive assessment of segmentation performance, including volumetric, surface-based, distance-based, and detection metrics.

@@ -55,6 +55,16 @@ If these are not set, LongiSeg will fall back to the respective nnU-Net paths, e
 
 For more details on installation requirements and dataset structure, refer to the [nnU-Net installation](documentation/installation_instructions.md) and the [path setup](documentation/setting_up_paths.md) documentation.
 
+## Using LongiSeg
+Detailed usage instructions for LongiSeg can be found in the [documentation](documentation/how_to_use_longiseg.md).
+
+TL;DR:
+1. Prepare your [dataset](documentation/how_to_use_longiseg.md#dataset-format), ensuring it includes a `patientsTr.json` file.
+2. Run [experiment planning and preprocessing](documentation/how_to_use_longiseg.md#experiment-planning-and-preprocessing): `LongiSeg_plan_and_preprocess -d DATASET_ID`.
+3. [Train](documentation/how_to_use_longiseg.md#training) your model: `LongiSeg_train DATASET_NAME_OR_ID UNET_CONFIGURATION FOLD`
+4. Run [inference](documentation/how_to_use_longiseg.md#inference) on unseen data: `LongiSeg_predict -i INPUT_FOLDER -o OUTPUT_FOLDER -path /path/to/patients.json -d DATASET_ID`
+5. Run [evaluation](documentation/how_to_use_longiseg.md#evaluation) on the predicted segmentation: `LongiSeg_evaluate_folder GT_FOLDER PRED_FOLDER -djfile /path/to/dataset.json -pfile /path/to/plans.json -patfile /path/to/patients.json`
+
 ## Compatibility with nnU-Net
 LongiSeg is fully compatible with nnU-Net and can be installed alongside it in the same environment. This allows users to seamlessly reuse existing nnU-Net structures, datasets, and preprocessing pipelines without modification.
 
