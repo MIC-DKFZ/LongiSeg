@@ -68,13 +68,6 @@ install the latest version with support for your hardware (cuda, mps, cpu).
           ```
 3) nnU-Net needs to know where you intend to save raw data, preprocessed data and trained models. For this you need to
    set a few environment variables. Please follow the instructions [here](setting_up_paths.md).
-4) (OPTIONAL) Install [hiddenlayer](https://github.com/waleedka/hiddenlayer). hiddenlayer enables nnU-net to generate
-   plots of the network topologies it generates (see [Model training](how_to_use_nnunet.md#model-training)). 
-To install hiddenlayer,
-   run the following command:
-    ```bash
-    pip install --upgrade git+https://github.com/FabianIsensee/hiddenlayer.git
-    ```
 
 Installing nnU-Net will add several new commands to your terminal. These commands are used to run the entire nnU-Net
 pipeline. You can execute them from any location on your system. All nnU-Net commands have the prefix `nnUNetv2_` for
