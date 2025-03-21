@@ -6,13 +6,14 @@ from batchgenerators.utilities.file_and_folder_operations import join
 import longiseg
 from longiseg.imageio.natural_image_reader_writer import NaturalImage2DIO
 from longiseg.imageio.nibabel_reader_writer import NibabelIO, NibabelIOWithReorient
-from longiseg.imageio.simpleitk_reader_writer import SimpleITKIO
+from longiseg.imageio.simpleitk_reader_writer import SimpleITKIO, SimpleITKIOWithReorient
 from longiseg.imageio.tif_reader_writer import Tiff3DIO
 from longiseg.imageio.base_reader_writer import BaseReaderWriter
 from longiseg.utilities.find_class_by_name import recursive_find_python_class
 
 LIST_OF_IO_CLASSES = [
     NaturalImage2DIO,
+    SimpleITKIOWithReorient,
     SimpleITKIO,
     Tiff3DIO,
     NibabelIO,
