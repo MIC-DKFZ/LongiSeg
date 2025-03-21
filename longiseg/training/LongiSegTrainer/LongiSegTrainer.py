@@ -721,3 +721,10 @@ class LongiSegTrainer(nnUNetTrainer):
 
         self.set_deep_supervision_enabled(True)
         compute_gaussian.cache_clear()
+
+
+class LongiSegTrainerRP(LongiSegTrainer):
+    def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
+                 device: torch.device = torch.device('cuda')):
+        super().__init__(plans, configuration, fold, dataset_json, device)
+        self.random_prior = True
