@@ -45,9 +45,9 @@ LongiSeg_train DATASET_NAME_OR_ID UNET_CONFIGURATION FOLD
 
 By default, LongiSeg uses the `LongiSegTrainer`, which integrates the temporal dimension by concatenating multi-timepoint images as additional input channels. Other trainers are available with the -tr option:
 
-- `nnUNetTrainerLongi`: A modified `nnUNetTrainer` where training data is split **at the patient level** instead of per scan.
+- `nnUNetTrainerLongi`: A modified `nnUNetTrainer` where training data is split **at the patient level** instead of per scan. (*non-longitudinal baseline*)
 - `LongiSegTrainerDiffWeighting`: A longitudinal trainer that incorporates the **Difference Weighting Block** for temporal feature fusion.
-- `LongiSegTrainerRP`, `LongiSegTrainerDiffWeightingRP`: longitudinal trainer with randomly sampled instead of fixed prior scan (c.f. [longi_dataset](../longiseg/training/dataloading/longi_dataset.py#L149-L153))
+- `LongiSegTrainerRP`, `LongiSegTrainerDiffWeightingRP`: longitudinal trainer with randomly sampled instead of fixed prior scan of the same patient (c.f. [longi_dataset](../longiseg/training/dataloading/longi_dataset.py#L149-L153))
 
 Other options for training are available as well (`LongiSeg_train -h`).
 
