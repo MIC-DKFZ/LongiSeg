@@ -1,9 +1,11 @@
 # Welcome to LongiSeg!
 
-## What is LongiSeg?
-LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for longitudinal medical image segmentation. It enhances segmentation performance by leveraging temporal information across multiple timepoints.
+<img src="documentation/assets/LongiSeg.jpg" />
 
-LongiSeg includes several methods for temporal feature merging, including the newly introduced Difference Weighting Block. &nbsp; &nbsp;   [![arXiv](https://img.shields.io/badge/arXiv-2404.03010-B31B1B.svg)](https://arxiv.org/abs/2409.13416) \
+## What is LongiSeg?
+LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
+
+LongiSeg includes several methods for temporal feature merging, including the newly introduced [Difference Weighting Block](https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting). &nbsp; &nbsp;   [![arXiv](https://img.shields.io/badge/arXiv-2404.03010-B31B1B.svg)](https://arxiv.org/abs/2409.13416) \
 For more details on the underlying nnU-Net framework, visit the [nnU-Net repository](https://github.com/MIC-DKFZ/nnUNet).
 
 Please cite the following works when using LongiSeg in your research:  
@@ -58,6 +60,8 @@ For more details on installation requirements and dataset structure, refer to th
 
 ## Using LongiSeg
 Detailed usage instructions for LongiSeg can be found in the [documentation](documentation/how_to_use_longiseg.md).
+
+<img src="documentation/assets/time_series.jpg" height="200px" />
 
 TL;DR:
 1. Prepare your [dataset](documentation/how_to_use_longiseg.md#dataset-format), ensuring it includes a `patientsTr.json` file.
