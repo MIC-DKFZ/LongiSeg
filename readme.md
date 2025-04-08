@@ -61,7 +61,7 @@ For more details on installation requirements and dataset structure, refer to th
 ## Using LongiSeg
 Detailed usage instructions for LongiSeg can be found in the [documentation](documentation/how_to_use_longiseg.md).
 
-<img src="documentation/assets/time_series.jpg" height="200px" />
+<img src="documentation/assets/time_series.jpg"/>
 
 TL;DR:
 1. Prepare your [dataset](documentation/how_to_use_longiseg.md#dataset-format), ensuring it includes a `patientsTr.json` file.
@@ -72,6 +72,22 @@ TL;DR:
 
 ## Compatibility with nnU-Net
 LongiSeg is fully compatible with nnU-Net and can be installed alongside it in the same environment. This allows users to seamlessly reuse existing nnU-Net structures, datasets, and preprocessing pipelines without modification.
+
+## 🔗 Also check out: LesionLocator – Zero-Shot Tumor Tracking & Segmentation
+
+If you're working on **lesion or tumor segmentation and tracking**, make sure to also check out our **LesionLocator** framework, introduced at **CVPR 2025**:
+
+[![arXiv](https://img.shields.io/badge/arXiv-2502.20985-b31b1b.svg)](https://arxiv.org/abs/2502.20985)
+
+🎯 **LesionLocator** is a powerful **zero-shot framework** for segmentation and longitudinal tracking of lesions in 3D whole-body imaging — no lesion-specific training required. It supports **prompt-based segmentation** (e.g., 3D point or box prompts) and **autoregressive tracking** across timepoints.
+
+👉 GitHub: [https://github.com/MIC-DKFZ/LesionLocator](https://github.com/MIC-DKFZ/LesionLocator)  
+
+LesionLocator and LongiSeg share a focus on **longitudinal analysis**, but with different strengths:
+- **LongiSeg** is ideal for fully supervised, dataset-specific training with temporal modeling across timepoints.
+- **LesionLocator** excels at **zero-shot generalization** and supports interactive & promptable workflows out of the box.
+
+Use them **together** to benchmark traditional vs. zero-shot approaches — or combine insights from both for even better longitudinal segmentation performance.
 
 # Acknowledgements
 <img src="documentation/assets/HIDSS4Health_Logo_RGB.png" height="100px" />
