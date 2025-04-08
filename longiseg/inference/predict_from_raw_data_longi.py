@@ -60,15 +60,25 @@ class LongiSegPredictor(nnUNetPredictor):
             raise RuntimeError(f'Unable to locate trainer class {trainer_name} in longiseg.training.LongiSegTrainer. '
                                f'Please place it there (in any .py file)!')
         print(trainer_class)
-        network = trainer_class.build_network_architecture(
-            trainer_class.architecture_class_name,
-            configuration_manager.network_arch_class_name,
-            configuration_manager.network_arch_init_kwargs,
-            configuration_manager.network_arch_init_kwargs_req_import,
-            num_input_channels,
-            plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
-            enable_deep_supervision=False
-        )
+        if hasattr(trainer_class, 'architecture_class_name'):
+            network = trainer_class.build_network_architecture(
+                trainer_class.architecture_class_name,
+                configuration_manager.network_arch_class_name,
+                configuration_manager.network_arch_init_kwargs,
+                configuration_manager.network_arch_init_kwargs_req_import,
+                num_input_channels,
+                plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+                enable_deep_supervision=False
+            )
+        else:
+            network = trainer_class.build_network_architecture(
+                configuration_manager.network_arch_class_name,
+                configuration_manager.network_arch_init_kwargs,
+                configuration_manager.network_arch_init_kwargs_req_import,
+                num_input_channels,
+                plans_manager.get_label_manager(dataset_json).num_segmentation_heads,
+                enable_deep_supervision=False
+            )
 
         self.plans_manager = plans_manager
         self.configuration_manager = configuration_manager

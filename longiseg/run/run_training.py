@@ -279,7 +279,7 @@ def run_training_longi_entry():
     parser.add_argument('fold', type=str,
                         help='Fold of the 5-fold cross-validation. Should be an int between 0 and 4.')
     parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainerLongi',
-                        help='[OPTIONAL] Use this flag to specify a custom trainer. Default: nnUNetTrainerLongi')
+                        help='[OPTIONAL] Use this flag to specify a custom trainer. Default: LongiSegTrainer')
     parser.add_argument('-p', type=str, required=False, default='nnUNetPlans',
                         help='[OPTIONAL] Use this flag to specify a custom plans identifier. Default: nnUNetPlans')
     parser.add_argument('-pretrained_weights', type=str, required=False, default=None,
