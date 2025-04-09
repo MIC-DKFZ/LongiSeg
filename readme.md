@@ -73,7 +73,7 @@ TL;DR:
 ## Compatibility with nnU-Net
 LongiSeg is fully compatible with nnU-Net and can be installed alongside it in the same environment. This allows users to seamlessly reuse existing nnU-Net structures, datasets, and preprocessing pipelines without modification.
 
-## 🔗 Also check out: LesionLocator – Zero-Shot Tumor Tracking & Segmentation
+## Also check out: LesionLocator – Zero-Shot Tumor Tracking & Segmentation
 
 If you're working on **lesion or tumor segmentation and tracking**, make sure to also check out our **LesionLocator** framework, introduced at **CVPR 2025**:
 
