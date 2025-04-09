@@ -10,7 +10,7 @@ from longiseg.configuration import default_num_processes
 from longiseg.ensembling.ensemble import ensemble_crossvalidations
 from longiseg.evaluation.accumulate_cv_results import accumulate_cv_results
 from longiseg.evaluation.evaluate_predictions import compute_metrics_on_folder, load_summary_json
-from longiseg.paths import nnUNet_preprocessed, nnUNet_raw, nnUNet_results
+from longiseg.paths import LongiSeg_preprocessed, LongiSeg_results
 from longiseg.postprocessing.remove_connected_components import determine_postprocessing
 from longiseg.utilities.file_path_utilities import maybe_convert_to_dataset_name, get_output_folder, \
     convert_identifier_to_trainer_plans_config, get_ensemble_name, folds_tuple_to_string
@@ -27,14 +27,14 @@ default_trained_models = tuple([
 def filter_available_models(model_dict: Union[List[dict], Tuple[dict, ...]], dataset_name_or_id: Union[str, int]):
     valid = []
     for trained_model in model_dict:
-        plans_manager = PlansManager(join(nnUNet_preprocessed, maybe_convert_to_dataset_name(dataset_name_or_id),
+        plans_manager = PlansManager(join(LongiSeg_preprocessed, maybe_convert_to_dataset_name(dataset_name_or_id),
                                trained_model['plans'] + '.json'))
         # check if configuration exists
         # 3d_cascade_fullres and 3d_lowres do not exist for each dataset so we allow them to be absent IF they are not
         # specified in the plans file
         if trained_model['configuration'] not in plans_manager.available_configurations:
             print(f"Configuration {trained_model['configuration']} not found in plans {trained_model['plans']}.\n"
-                  f"Inferred plans file: {join(nnUNet_preprocessed, maybe_convert_to_dataset_name(dataset_name_or_id), trained_model['plans'] + '.json')}.")
+                  f"Inferred plans file: {join(LongiSeg_preprocessed, maybe_convert_to_dataset_name(dataset_name_or_id), trained_model['plans'] + '.json')}.")
             continue
 
         # check if trained model output folder exists. This is a requirement. No mercy here.
@@ -113,7 +113,7 @@ def find_best_configuration(dataset_name_or_id,
                 output_folder_2 = get_output_folder(dataset_name_or_id, m2['trainer'], m2['plans'], m2['configuration'], fold=None)
                 identifier = get_ensemble_name(output_folder_1, output_folder_2, folds)
 
-                output_folder_ensemble = join(nnUNet_results, dataset_name, 'ensembles', identifier)
+                output_folder_ensemble = join(LongiSeg_results, dataset_name, 'ensembles', identifier)
 
                 ensemble_crossvalidations([output_folder_1, output_folder_2], output_folder_ensemble, folds,
                                           num_processes, overwrite=overwrite)
@@ -124,7 +124,7 @@ def find_best_configuration(dataset_name_or_id,
                 label_manager = plans_manager.get_label_manager(dataset_json)
                 rw = plans_manager.image_reader_writer_class()
 
-                compute_metrics_on_folder(join(nnUNet_preprocessed, dataset_name, 'gt_segmentations'),
+                compute_metrics_on_folder(join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'),
                                           output_folder_ensemble,
                                           join(output_folder_ensemble, 'summary.json'),
                                           rw,
@@ -154,7 +154,7 @@ def find_best_configuration(dataset_name_or_id,
     print()
 
     print('***Determining postprocessing for best model/ensemble***')
-    determine_postprocessing(all_results[best_key]['source'], join(nnUNet_preprocessed, dataset_name, 'gt_segmentations'),
+    determine_postprocessing(all_results[best_key]['source'], join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'),
                              plans_file_or_dict=join(all_results[best_key]['source'], 'plans.json'),
                              dataset_json_file_or_dict=join(all_results[best_key]['source'], 'dataset.json'),
                              num_processes=num_processes, keep_postprocessed_files=True)
@@ -203,12 +203,12 @@ def find_best_configuration(dataset_name_or_id,
                 'plans_identifier': pl,
             })
 
-    save_json(return_dict, join(nnUNet_results, dataset_name, 'inference_information.json'))  # save this so that we don't have to run this
+    save_json(return_dict, join(LongiSeg_results, dataset_name, 'inference_information.json'))  # save this so that we don't have to run this
     # everything someone wants to be reminded of the inference commands. They can just load this and give it to
     # print_inference_instructions
 
     # print it
-    print_inference_instructions(return_dict, instructions_file=join(nnUNet_results, dataset_name, 'inference_instructions.txt'))
+    print_inference_instructions(return_dict, instructions_file=join(LongiSeg_results, dataset_name, 'inference_instructions.txt'))
     return return_dict
 
 

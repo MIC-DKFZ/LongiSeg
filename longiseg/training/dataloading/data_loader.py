@@ -8,7 +8,7 @@ from batchgenerators.dataloading.data_loader import DataLoader
 from batchgenerators.utilities.file_and_folder_operations import join, load_json
 from threadpoolctl import threadpool_limits
 
-from longiseg.paths import nnUNet_preprocessed
+from longiseg.paths import LongiSeg_preprocessed
 from longiseg.training.dataloading.nnunet_dataset import nnUNetBaseDataset
 from longiseg.training.dataloading.nnunet_dataset import nnUNetDatasetBlosc2
 from longiseg.utilities.label_handling.label_handling import LabelManager
@@ -219,7 +219,7 @@ class nnUNetDataLoader(DataLoader):
 
 
 if __name__ == '__main__':
-    folder = join(nnUNet_preprocessed, 'Dataset002_Heart', 'nnUNetPlans_3d_fullres')
+    folder = join(LongiSeg_preprocessed, 'Dataset002_Heart', 'nnUNetPlans_3d_fullres')
     ds = nnUNetDatasetBlosc2(folder)  # this should not load the properties!
     pm = PlansManager(join(folder, os.pardir, 'nnUNetPlans.json'))
     lm = pm.get_label_manager(load_json(join(folder, os.pardir, 'dataset.json')))

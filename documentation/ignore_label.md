@@ -4,7 +4,7 @@ The _ignore label_ can be used to mark regions that should be ignored by nnU-Net
 learn from images where only sparse annotations are available, for example in the form of scribbles or a limited 
 amount of annotated slices. Internally, this is accomplished by using partial losses, i.e. losses that are only 
 computed on annotated pixels while ignoring the rest. Take a look at our 
-[`DC_and_BCE_loss` loss](../nnunetv2/training/loss/compound_losses.py) to see how this is done.
+[`DC_and_BCE_loss` loss](../longiseg/training/loss/compound_losses.py) to see how this is done.
 During inference (validation and prediction), nnU-Net will always predict dense segmentations. Metric computation in 
 validation is of course only done on annotated pixels.
 

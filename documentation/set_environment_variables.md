@@ -11,9 +11,9 @@ Variables can either be set permanently (recommended!) or you can decide to set 
 Locate the `.bashrc` file in your home folder and add the following lines to the bottom:
 
 ```bash
-export nnUNet_raw="/media/fabian/nnUNet_raw"
-export nnUNet_preprocessed="/media/fabian/nnUNet_preprocessed"
-export nnUNet_results="/media/fabian/nnUNet_results"
+export LongiSeg_raw="/path/to/LongiSeg_raw"
+export LongiSeg_preprocessed="/path/to/LongiSeg_preprocessed"
+export LongiSeg_results="/path/to/LongiSeg_results"
 ```
 
 (Of course you need to adapt the paths to the actual folders you intend to use).
@@ -22,9 +22,9 @@ If you are using a different shell, such as zsh, you will need to find the corre
 ## Temporary
 Just execute the following lines whenever you run nnU-Net:
 ```bash
-export nnUNet_raw="/media/fabian/nnUNet_raw"
-export nnUNet_preprocessed="/media/fabian/nnUNet_preprocessed"
-export nnUNet_results="/media/fabian/nnUNet_results"
+export LongiSeg_raw="/path/to/LongiSeg_raw"
+export LongiSeg_preprocessed="/path/to/LongiSeg_preprocessed"
+export LongiSeg_results="/path/to/LongiSeg_results"
 ```
 (Of course you need to adapt the paths to the actual folders you intend to use).
 
@@ -33,10 +33,10 @@ terminal window and DO NOT transfer to other terminals!
 
 Alternatively you can also just prefix them to your nnU-Net commands:
 
-`nnUNet_results="/media/fabian/nnUNet_results" nnUNet_preprocessed="/media/fabian/nnUNet_preprocessed" nnUNetv2_train[...]`
+`LongiSeg_results="/path/to/LongiSeg_results" LongiSeg_preprocessed="/path/to/LongiSeg_preprocessed" nnUNetv2_train[...]`
 
 ## Verify that environment parameters are set
-You can always execute `echo ${nnUNet_raw}` etc to print the environment variables. This will return an empty string if 
+You can always execute `echo ${LongiSeg_raw}` etc to print the environment variables. This will return an empty string if 
 they were not set.
 
 # Windows
@@ -53,16 +53,16 @@ Just execute the following before you run nnU-Net:
 
 (PowerShell)
 ```PowerShell
-$Env:nnUNet_raw = "C:/Users/fabian/nnUNet_raw"
-$Env:nnUNet_preprocessed = "C:/Users/fabian/nnUNet_preprocessed"
-$Env:nnUNet_results = "C:/Users/fabian/nnUNet_results"
+$Env:LongiSeg_raw = "C:/path/to/LongiSeg_raw"
+$Env:LongiSeg_preprocessed = "C:/path/to/LongiSeg_preprocessed"
+$Env:LongiSeg_results = "C:/path/to/LongiSeg_results"
 ```
 
 (Command Prompt)
 ```Command Prompt
-set nnUNet_raw=C:/Users/fabian/nnUNet_raw
-set nnUNet_preprocessed=C:/Users/fabian/nnUNet_preprocessed
-set nnUNet_results=C:/Users/fabian/fabian/nnUNet_results
+set LongiSeg_raw=C:/path/to/LongiSeg_raw
+set LongiSeg_preprocessed=C:/path/to/LongiSeg_preprocessed
+set LongiSeg_results=C:/path/to/LongiSeg_results
 ```
 
 (Of course you need to adapt the paths to the actual folders you intend to use).

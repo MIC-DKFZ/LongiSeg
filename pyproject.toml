@@ -61,7 +61,6 @@ homepage = "https://github.com/MIC-DKFZ/LongiSeg"
 repository = "https://github.com/MIC-DKFZ/LongiSeg"
 
 [project.scripts]
-LongiSeg_convert_old_nnUNet_dataset = "longiseg.dataset_conversion.convert_raw_dataset_from_old_nnunet_format:convert_entry_point"
 LongiSeg_find_best_configuration = "longiseg.evaluation.find_best_configuration:find_best_configuration_entry_point"
 LongiSeg_determine_postprocessing = "longiseg.postprocessing.remove_connected_components:entry_point_determine_postprocessing_folder"
 LongiSeg_apply_postprocessing = "longiseg.postprocessing.remove_connected_components:entry_point_apply_postprocessing"
@@ -72,7 +71,6 @@ LongiSeg_download_pretrained_model_by_url = "longiseg.model_sharing.entry_points
 LongiSeg_install_pretrained_model_from_zip = "longiseg.model_sharing.entry_points:install_from_zip_entry_point"
 LongiSeg_export_model_to_zip = "longiseg.model_sharing.entry_points:export_pretrained_model_entry"
 LongiSeg_move_plans_between_datasets = "longiseg.experiment_planning.plans_for_pretraining.move_plans_between_datasets:entry_point_move_plans_between_datasets"
-LongiSeg_convert_MSD_dataset = "longiseg.dataset_conversion.convert_MSD_dataset:entry_point"
 LongiSeg_plan_and_preprocess = "longiseg.experiment_planning.plan_and_preprocess_longi_entrypoints:plan_and_preprocess_longi_entry"
 LongiSeg_extract_fingerprint = "longiseg.experiment_planning.plan_and_preprocess_longi_entrypoints:extract_fingerprint_longi_entry"
 LongiSeg_plan_experiment = "longiseg.experiment_planning.plan_and_preprocess_longi_entrypoints:plan_experiment_longi_entry"

@@ -8,7 +8,7 @@ The splits nnU-Net uses are generated in the `do_split` function of nnUNetTraine
 existing splits, stored as a file, and if no split exists it will create one. So if you wish to influence the split, 
 manually creating a split file that will then be recognized and used is the way to go!
 
-The split file is located in the `nnUNet_preprocessed/DATASETXXX_NAME` folder. So it is best practice to first 
+The split file is located in the `LongiSeg_preprocessed/DATASETXXX_NAME` folder. So it is best practice to first 
 populate this folder by running `nnUNetv2_plan_and_preproccess`.
 
 Splits are stored as a .json file. They are a simple python list. The length of that list is the number of splits it 
@@ -43,4 +43,4 @@ If you are still not sure what splits are supposed to look like, simply download
 the .json file with your text editor of choice!
 
 In order to generate your custom splits, all you need to do is reproduce the data structure explained above and save it as 
-`splits_final.json` in the `nnUNet_preprocessed/DATASETXXX_NAME` folder. Then use `nnUNetv2_train` etc. as usual.
+`splits_final.json` in the `LongiSeg_preprocessed/DATASETXXX_NAME` folder. Then use `nnUNetv2_train` etc. as usual.

@@ -20,7 +20,7 @@ from batchgenerators.utilities.file_and_folder_operations import *
 import numpy as np
 import re
 
-from longiseg.paths import nnUNet_raw
+from longiseg.paths import LongiSeg_raw
 from multiprocessing import Pool
 
 
@@ -97,4 +97,4 @@ def get_filenames_of_train_images_and_targets(raw_dataset_folder: str, dataset_j
 
 
 if __name__ == '__main__':
-    print(get_filenames_of_train_images_and_targets(join(nnUNet_raw, 'Dataset002_Heart')))
+    print(get_filenames_of_train_images_and_targets(join(LongiSeg_raw, 'Dataset002_Heart')))

@@ -8,7 +8,7 @@ from longiseg.configuration import default_num_processes
 from longiseg.experiment_planning.dataset_fingerprint.fingerprint_extractor import DatasetFingerprintExtractor
 from longiseg.experiment_planning.experiment_planners.default_experiment_planner import ExperimentPlanner
 from longiseg.experiment_planning.verify_dataset_integrity import verify_dataset_integrity
-from longiseg.paths import nnUNet_raw, nnUNet_preprocessed
+from longiseg.paths import LongiSeg_raw, LongiSeg_preprocessed
 from longiseg.utilities.dataset_name_id_conversion import convert_id_to_dataset_name
 from longiseg.utilities.find_class_by_name import recursive_find_python_class
 from longiseg.utilities.plans_handling.plans_handler import PlansManager
@@ -27,7 +27,7 @@ def extract_fingerprint_longi_dataset(dataset_id: int,
     print(dataset_name)
 
     if check_dataset_integrity:
-        verify_dataset_integrity(join(nnUNet_raw, dataset_name), num_processes)
+        verify_dataset_integrity(join(LongiSeg_raw, dataset_name), num_processes)
 
     fpe = fingerprint_extractor_class(dataset_id, num_processes, verbose=verbose)
     return fpe.run(overwrite_existing=clean)
@@ -115,7 +115,7 @@ def preprocess_longi_dataset(dataset_id: int,
 
     dataset_name = convert_id_to_dataset_name(dataset_id)
     print(f'Preprocessing dataset {dataset_name}')
-    plans_file = join(nnUNet_preprocessed, dataset_name, plans_identifier + '.json')
+    plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
     plans_manager = PlansManager(plans_file)
     for n, c in zip(num_processes, configurations):
         print(f'Configuration: {c}...')
@@ -128,16 +128,16 @@ def preprocess_longi_dataset(dataset_id: int,
         preprocessor = configuration_manager.preprocessor_class(verbose=verbose)
         preprocessor.run(dataset_id, c, plans_identifier, num_processes=n)
 
-    # copy the gt to a folder in the nnUNet_preprocessed so that we can do validation even if the raw data is no
+    # copy the gt to a folder in the LongiSeg_preprocessed so that we can do validation even if the raw data is no
     # longer there (useful for compute cluster where only the preprocessed data is available)
     from distutils.file_util import copy_file
-    maybe_mkdir_p(join(nnUNet_preprocessed, dataset_name, 'gt_segmentations'))
-    dataset_json = load_json(join(nnUNet_raw, dataset_name, 'dataset.json'))
-    dataset = get_filenames_of_train_images_and_targets(join(nnUNet_raw, dataset_name), dataset_json)
+    maybe_mkdir_p(join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'))
+    dataset_json = load_json(join(LongiSeg_raw, dataset_name, 'dataset.json'))
+    dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
     # only copy files that are newer than the ones already present
     for k in dataset:
         copy_file(dataset[k]['label'],
-                  join(nnUNet_preprocessed, dataset_name, 'gt_segmentations', k + dataset_json['file_ending']),
+                  join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations', k + dataset_json['file_ending']),
                   update=True)
 
 

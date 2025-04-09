@@ -13,7 +13,7 @@ from longiseg.evaluation.accumulate_cv_results import accumulate_cv_results
 from longiseg.evaluation.evaluate_predictions import region_or_label_to_mask, compute_metrics_on_folder, \
     load_summary_json, label_or_region_to_key
 from longiseg.imageio.base_reader_writer import BaseReaderWriter
-from longiseg.paths import nnUNet_raw
+from longiseg.paths import LongiSeg_raw
 from longiseg.utilities.file_path_utilities import folds_tuple_to_string
 from longiseg.utilities.json_export import recursive_fix_for_json_export
 from longiseg.utilities.plans_handling.plans_handler import PlansManager
@@ -331,32 +331,3 @@ def entry_point_apply_postprocessing():
     args = parser.parse_args()
     pp_fns, pp_fn_kwargs = load_pickle(args.pp_pkl_file)
     apply_postprocessing_to_folder(args.i, args.o, pp_fns, pp_fn_kwargs, args.plans_json, args.dataset_json, args.np)
-
-
-if __name__ == '__main__':
-    trained_model_folder = '/home/fabian/results/nnUNet_remake/Dataset004_Hippocampus/nnUNetTrainer__nnUNetPlans__3d_fullres'
-    labelstr = join(nnUNet_raw, 'Dataset004_Hippocampus', 'labelsTr')
-    plans_manager = PlansManager(join(trained_model_folder, 'plans.json'))
-    dataset_json = load_json(join(trained_model_folder, 'dataset.json'))
-    folds = (0, 1, 2, 3, 4)
-    label_manager = plans_manager.get_label_manager(dataset_json)
-
-    merged_output_folder = join(trained_model_folder, f'crossval_results_folds_{folds_tuple_to_string(folds)}')
-    accumulate_cv_results(trained_model_folder, merged_output_folder, folds, 8, False)
-
-    fns, kwargs = determine_postprocessing(merged_output_folder, labelstr, plans_manager.plans,
-                                           dataset_json, 8, keep_postprocessed_files=True)
-    save_pickle((fns, kwargs), join(trained_model_folder, 'postprocessing.pkl'))
-    fns, kwargs = load_pickle(join(trained_model_folder, 'postprocessing.pkl'))
-
-    apply_postprocessing_to_folder(merged_output_folder, merged_output_folder + '_pp', fns, kwargs,
-                                   plans_manager.plans, dataset_json,
-                                   8)
-    compute_metrics_on_folder(labelstr,
-                              merged_output_folder + '_pp',
-                              join(merged_output_folder + '_pp', 'summary.json'),
-                              plans_manager.image_reader_writer_class(),
-                              dataset_json['file_ending'],
-                              label_manager.foreground_regions if label_manager.has_regions else label_manager.foreground_labels,
-                              label_manager.ignore_label,
-                              8)

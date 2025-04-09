@@ -9,7 +9,7 @@ from tqdm import tqdm
 
 from longiseg.imageio.base_reader_writer import BaseReaderWriter
 from longiseg.imageio.reader_writer_registry import determine_reader_writer_from_dataset_json
-from longiseg.paths import nnUNet_raw, nnUNet_preprocessed
+from longiseg.paths import LongiSeg_raw, LongiSeg_preprocessed
 from longiseg.preprocessing.cropping.cropping import crop_to_nonzero
 from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 from longiseg.utilities.utils import get_filenames_of_train_images_and_targets
@@ -28,7 +28,7 @@ class DatasetFingerprintExtractor(object):
         self.verbose = verbose
 
         self.dataset_name = dataset_name
-        self.input_folder = join(nnUNet_raw, dataset_name)
+        self.input_folder = join(LongiSeg_raw, dataset_name)
         self.num_processes = num_processes
         self.dataset_json = load_json(join(self.input_folder, 'dataset.json'))
         self.dataset = get_filenames_of_train_images_and_targets(self.input_folder, self.dataset_json)
@@ -113,8 +113,8 @@ class DatasetFingerprintExtractor(object):
 
     def run(self, overwrite_existing: bool = False) -> dict:
         # we do not save the properties file in self.input_folder because that folder might be read-only. We can only
-        # reliably write in nnUNet_preprocessed and nnUNet_results, so nnUNet_preprocessed it is
-        preprocessed_output_folder = join(nnUNet_preprocessed, self.dataset_name)
+        # reliably write in LongiSeg_preprocessed and LongiSeg_results, so LongiSeg_preprocessed it is
+        preprocessed_output_folder = join(LongiSeg_preprocessed, self.dataset_name)
         maybe_mkdir_p(preprocessed_output_folder)
         properties_file = join(preprocessed_output_folder, 'dataset_fingerprint.json')
 

@@ -47,7 +47,7 @@ cons:
 
 Example:
 ```python
-    from longiseg.paths import nnUNet_results, nnUNet_raw
+    from longiseg.paths import LongiSeg_results, LongiSeg_raw
     import torch
     from batchgenerators.utilities.file_and_folder_operations import join
     from longiseg.inference.predict_from_raw_data import nnUNetPredictor
@@ -65,13 +65,13 @@ Example:
     )
     # initializes the network architecture, loads the checkpoint
     predictor.initialize_from_trained_model_folder(
-        join(nnUNet_results, 'Dataset003_Liver/nnUNetTrainer__nnUNetPlans__3d_lowres'),
+        join(LongiSeg_results, 'Dataset003_Liver/nnUNetTrainer__nnUNetPlans__3d_lowres'),
         use_folds=(0,),
         checkpoint_name='checkpoint_final.pth',
     )
     # variant 1: give input and output folders
-    predictor.predict_from_files(join(nnUNet_raw, 'Dataset003_Liver/imagesTs'),
-                                 join(nnUNet_raw, 'Dataset003_Liver/imagesTs_predlowres'),
+    predictor.predict_from_files(join(LongiSeg_raw, 'Dataset003_Liver/imagesTs'),
+                                 join(LongiSeg_raw, 'Dataset003_Liver/imagesTs_predlowres'),
                                  save_probabilities=False, overwrite=False,
                                  num_processes_preprocessing=2, num_processes_segmentation_export=2,
                                  folder_with_segs_from_prev_stage=None, num_parts=1, part_id=0)
@@ -89,8 +89,8 @@ If you give files as input, you need to give individual output files as output!
 
 ```python
     # variant 2, use list of files as inputs. Note how we use nested lists!!!
-    indir = join(nnUNet_raw, 'Dataset003_Liver/imagesTs')
-    outdir = join(nnUNet_raw, 'Dataset003_Liver/imagesTs_predlowres')
+    indir = join(LongiSeg_raw, 'Dataset003_Liver/imagesTs')
+    outdir = join(LongiSeg_raw, 'Dataset003_Liver/imagesTs_predlowres')
     predictor.predict_from_files([[join(indir, 'liver_152_0000.nii.gz')], 
                                   [join(indir, 'liver_142_0000.nii.gz')]],
                                  [join(outdir, 'liver_152.nii.gz'),
@@ -103,7 +103,7 @@ If you give files as input, you need to give individual output files as output!
 Did you know? If you do not specify output files, the predicted segmentations will be returned:
 ```python
     # variant 2.5, returns segmentations
-    indir = join(nnUNet_raw, 'Dataset003_Liver/imagesTs')
+    indir = join(LongiSeg_raw, 'Dataset003_Liver/imagesTs')
     predicted_segmentations = predictor.predict_from_files([[join(indir, 'liver_152_0000.nii.gz')],
                                   [join(indir, 'liver_142_0000.nii.gz')]],
                                  None,
@@ -130,10 +130,10 @@ cons:
 ```python
     from longiseg.imageio.simpleitk_reader_writer import SimpleITKIO
 
-    img, props = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_147_0000.nii.gz')])
-    img2, props2 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_146_0000.nii.gz')])
-    img3, props3 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_145_0000.nii.gz')])
-    img4, props4 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_144_0000.nii.gz')])
+    img, props = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_147_0000.nii.gz')])
+    img2, props2 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_146_0000.nii.gz')])
+    img3, props3 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_145_0000.nii.gz')])
+    img4, props4 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_144_0000.nii.gz')])
     # we do not set output files so that the segmentations will be returned. You can of course also specify output
     # files instead (no return value on that case)
     ret = predictor.predict_from_list_of_npy_arrays([img, img2, img3, img4],
@@ -166,11 +166,11 @@ cons:
 
 ```python
     # predict a single numpy array (SimpleITKIO)
-    img, props = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTr/liver_63_0000.nii.gz')])
+    img, props = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTr/liver_63_0000.nii.gz')])
     ret = predictor.predict_single_npy_array(img, props, None, None, False)
 
     # predict a single numpy array (NibabelIO)
-    img, props = NibabelIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTr/liver_63_0000.nii.gz')])
+    img, props = NibabelIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTr/liver_63_0000.nii.gz')])
     ret = predictor.predict_single_npy_array(img, props, None, None, False)
 
     # The following IS NOT RECOMMENDED. Use longiseg.imageio!
@@ -196,10 +196,10 @@ cons:
 - harder than you might think
 
 ```python
-    img, props = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_147_0000.nii.gz')])
-    img2, props2 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_146_0000.nii.gz')])
-    img3, props3 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_145_0000.nii.gz')])
-    img4, props4 = SimpleITKIO().read_images([join(nnUNet_raw, 'Dataset003_Liver/imagesTs/liver_144_0000.nii.gz')])
+    img, props = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_147_0000.nii.gz')])
+    img2, props2 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_146_0000.nii.gz')])
+    img3, props3 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_145_0000.nii.gz')])
+    img4, props4 = SimpleITKIO().read_images([join(LongiSeg_raw, 'Dataset003_Liver/imagesTs/liver_144_0000.nii.gz')])
     # each element returned by data_iterator must be a dict with 'data', 'ofile' and 'data_properties' keys!
     # If 'ofile' is None, the result will be returned instead of written to a file
     # the iterator is responsible for performing the correct preprocessing!

@@ -14,7 +14,7 @@ preprocessing, resampling, network topology etc. Read [this](explanation_plans_f
 - Read about our support for [region-based training](region_based_training.md)
 - If you intend to modify the training procedure (loss, sampling, data augmentation, lr scheduler, etc) then you need 
 to implement your own trainer class. Best practice is to create a class that inherits from nnUNetTrainer and 
-implements the necessary changes. Head over to our [trainer classes folder](../nnunetv2/training/nnUNetTrainer) for 
+implements the necessary changes. Head over to our [trainer classes folder](../longiseg/training/nnUNetTrainer) for 
 inspiration! There will be similar trainers for what you intend to change and you can take them as a guide. nnUNetTrainer 
 are structured similarly to PyTorch lightning trainers, this should also make things easier!
 - Integrating new network architectures can be done in two ways:

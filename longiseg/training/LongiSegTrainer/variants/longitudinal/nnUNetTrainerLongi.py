@@ -16,7 +16,7 @@ from longiseg.evaluation.evaluate_predictions import compute_metrics_on_folder
 from longiseg.inference.export_prediction import export_prediction_from_logits, resample_and_save
 from longiseg.inference.predict_from_raw_data import nnUNetPredictor
 from longiseg.inference.sliding_window_prediction import compute_gaussian
-from longiseg.paths import nnUNet_preprocessed
+from longiseg.paths import LongiSeg_preprocessed
 from longiseg.training.dataloading.nnunet_dataset_longi import infer_dataset_class
 from longiseg.training.dataloading.data_loader import nnUNetDataLoader
 from longiseg.utilities.crossval_split import generate_crossval_split_longi
@@ -295,7 +295,7 @@ class nnUNetTrainerLongi(nnUNetTrainer):
                 if next_stages is not None:
                     for n in next_stages:
                         next_stage_config_manager = self.plans_manager.get_configuration(n)
-                        expected_preprocessed_folder = join(nnUNet_preprocessed, self.plans_manager.dataset_name,
+                        expected_preprocessed_folder = join(LongiSeg_preprocessed, self.plans_manager.dataset_name,
                                                             next_stage_config_manager.data_identifier)
                         # next stage may have a different dataset class, do not use self.dataset_class
                         dataset_class = infer_dataset_class(expected_preprocessed_folder)

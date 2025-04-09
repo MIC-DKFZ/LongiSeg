@@ -326,10 +326,10 @@ class PlansManager(object):
 
 
 if __name__ == '__main__':
-    from longiseg.paths import nnUNet_preprocessed
+    from longiseg.paths import LongiSeg_preprocessed
     from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
-    plans = load_json(join(nnUNet_preprocessed, maybe_convert_to_dataset_name(3), 'nnUNetPlans.json'))
+    plans = load_json(join(LongiSeg_preprocessed, maybe_convert_to_dataset_name(3), 'nnUNetPlans.json'))
     # build new configuration that inherits from 3d_fullres
     plans['configurations']['3d_fullres_bs4'] = {
         'batch_size': 4,

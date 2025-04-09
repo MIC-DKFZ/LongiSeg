@@ -35,9 +35,9 @@ images and ADC maps.
 you deviate from that path, make sure to benchmark whether that actually improves results! 
 
 # How to implement custom normalization strategies?
-- Head over to nnunetv2/preprocessing/normalization
+- Head over to longiseg/preprocessing/normalization
 - implement a new image normalization class by deriving from ImageNormalization
-- register it in nnunetv2/preprocessing/normalization/map_channel_name_to_normalization.py:channel_name_to_normalization_mapping. 
+- register it in longiseg/preprocessing/normalization/map_channel_name_to_normalization.py:channel_name_to_normalization_mapping. 
 This is where you specify a channel name that should be associated with it
 - use it by specifying the correct channel_name
 

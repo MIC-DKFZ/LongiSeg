@@ -152,22 +152,3 @@ def resample_torch_fornnunet(
         return data
     else:
         return resample_torch_simple(data, new_shape, is_seg, num_threads, device, memefficient_seg_resampling)
-
-
-if __name__ == '__main__':
-    torch.set_num_threads(16)
-    img_file = '/media/isensee/raw_data/nnUNet_raw/Dataset027_ACDC/imagesTr/patient041_frame01_0000.nii.gz'
-    seg_file = '/media/isensee/raw_data/nnUNet_raw/Dataset027_ACDC/labelsTr/patient041_frame01.nii.gz'
-    io = SimpleITKIO()
-    data, pkl = io.read_images((img_file, ))
-    seg, pkl = io.read_seg(seg_file)
-
-    target_shape = (15, 256, 312)
-    spacing = pkl['spacing']
-
-    use = data
-    is_seg = False
-
-    ret_nosep = resample_torch_fornnunet(use, target_shape, spacing, spacing, is_seg)
-    ret_sep = resample_torch_fornnunet(use, target_shape, spacing, spacing, is_seg, force_separate_z=False)
-

@@ -51,7 +51,7 @@ Local settings:
 - `spacing`: the target spacing used in this configuration
 - `patch_size`: the patch size used for training this configuration
 - `data_identifier`: the preprocessed data for this configuration will be saved in
-  nnUNet_preprocessed/DATASET_NAME/_data_identifier_. If you add a new configuration, remember to set a unique
+  LongiSeg_preprocessed/DATASET_NAME/_data_identifier_. If you add a new configuration, remember to set a unique
   data_identifier in order to not create conflicts with other configurations (unless you plan to reuse the data from
   another configuration, for example as is done in the cascade)
 - `batch_size`: batch size used for training

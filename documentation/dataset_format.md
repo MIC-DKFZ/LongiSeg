@@ -26,8 +26,7 @@ T2 MRI, …) and FILE_ENDING is the file extension used by your image format (.p
 The dataset.json file connects channel names with the channel identifiers in the 'channel_names' key (see below for details).
 
 Side note: Typically, each channel/modality needs to be stored in a separate file and is accessed with the XXXX channel identifier. 
-Exception are natural images (RGB; .png) where the three color channels can all be stored in one file (see the 
-[road segmentation](../nnunetv2/dataset_conversion/Dataset120_RoadSegmentation.py) dataset as an example). 
+Exception are natural images (RGB; .png) where the three color channels can all be stored in one file. 
 
 **Segmentations** must share the same geometry with their corresponding images (same shape etc.). Segmentations are 
 integer maps with each value representing a semantic class. The background must be 0. If there is no background, then 
@@ -48,7 +47,7 @@ is thus not possible to train .png and then run inference on .jpg.
 One big change in nnU-Net V2 is the support of multiple input file types. Gone are the days of converting everything to .nii.gz!
 This is implemented by abstracting the input and output of images + segmentations through `BaseReaderWriter`. nnU-Net 
 comes with a broad collection of Readers+Writers and you can even add your own to support your data format! 
-See [here](../nnunetv2/imageio/readme.md).
+See [here](../longiseg/imageio/readme.md).
 
 As a nice bonus, nnU-Net now also natively supports 2D input images and you no longer have to mess around with 
 conversions to pseudo 3D niftis. Yuck. That was disgusting.
@@ -76,13 +75,13 @@ the future), we must ensure that there are no compression artifacts that destroy
 the likes! 
 
 ## Dataset folder structure
-Datasets must be located in the `nnUNet_raw` folder (which you either define when installing nnU-Net or export/set every 
+Datasets must be located in the `LongiSeg_raw` folder (which you either define when installing nnU-Net or export/set every 
 time you intend to run nnU-Net commands!).
 Each segmentation dataset is stored as a separate 'Dataset'. Datasets are associated with a dataset ID, a three digit 
 integer, and a dataset name (which you can freely choose): For example, Dataset005_Prostate has 'Prostate' as dataset name and 
-the dataset id is 5. Datasets are stored in the `nnUNet_raw` folder like this:
+the dataset id is 5. Datasets are stored in the `LongiSeg_raw` folder like this:
 
-    nnUNet_raw/
+    LongiSeg_raw/
     ├── Dataset001_BrainTumour
     ├── Dataset002_Heart
     ├── Dataset003_Liver
@@ -99,9 +98,6 @@ Within each dataset folder, the following structure is expected:
     └── labelsTr
 
 
-When adding your custom dataset, take a look at the [dataset_conversion](../nnunetv2/dataset_conversion) folder and 
-pick an id that is not already taken. IDs 001-010 are for the Medical Segmentation Decathlon.
-
 - **imagesTr** contains the images belonging to the training cases. nnU-Net will perform pipeline configuration, training with 
 cross-validation, as well as finding postprocessing and the best ensemble using this data. 
 - **imagesTs** (optional) contains the images that belong to the test cases. nnU-Net does not use them! This could just 
@@ -113,7 +109,7 @@ The scheme introduced [above](#what-do-training-cases-look-like) results in the 
 is an example for the first Dataset of the MSD: BrainTumour. This dataset hat four input channels: FLAIR (0000), 
 T1w (0001), T1gd (0002) and T2w (0003). Note that the imagesTs folder is optional and does not have to be present.
 
-    nnUNet_raw/Dataset001_BrainTumour/
+    LongiSeg_raw/Dataset001_BrainTumour/
     ├── dataset.json
     ├── imagesTr
     │   ├── BRATS_001_0000.nii.gz
@@ -142,7 +138,7 @@ T1w (0001), T1gd (0002) and T2w (0003). Note that the imagesTs folder is optiona
 
 Here is another example of the second dataset of the MSD, which has only one input channel:
 
-    nnUNet_raw/Dataset002_Heart/
+    LongiSeg_raw/Dataset002_Heart/
     ├── dataset.json
     ├── imagesTr
     │   ├── la_003_0000.nii.gz
@@ -198,8 +194,7 @@ be used with this dataset. If not provided, nnU-Net will automatically determine
 - "regions_class_order" only used in [region-based training](region_based_training.md)
 
 There is a utility with which you can generate the dataset.json automatically. You can find it 
-[here](../nnunetv2/dataset_conversion/generate_dataset_json.py). 
-See our examples in [dataset_conversion](../nnunetv2/dataset_conversion) for how to use it. And read its documentation!
+[here](../longiseg/dataset_conversion/generate_dataset_json.py). 
 
 As described above, a json file that contains spacing information is required for TIFF files.
 An example for a 3D TIFF stack with units corresponding to 7.6 in x and y, 80 in z is:
@@ -212,7 +207,7 @@ An example for a 3D TIFF stack with units corresponding to 7.6 in x and y, 80 in
 
 Within the dataset folder, this file (named `cell6.json` in this example) would be placed in the following folders:
 
-    nnUNet_raw/Dataset123_Foo/
+    LongiSeg_raw/Dataset123_Foo/
     ├── dataset.json
     ├── imagesTr
     │   ├── cell6.json
@@ -227,28 +222,16 @@ If you are migrating from the old nnU-Net, convert your existing datasets with `
 
 Example for migrating a nnU-Net v1 Task:
 ```bash
-nnUNetv2_convert_old_nnUNet_dataset /media/isensee/raw_data/nnUNet_raw_data_base/nnUNet_raw_data/Task027_ACDC Dataset027_ACDC 
+nnUNetv2_convert_old_nnUNet_dataset /path/to/raw_data/nnUNet_raw_data_base/nnUNet_raw_data/Task027_ACDC Dataset027_ACDC 
 ```
 Use `nnUNetv2_convert_old_nnUNet_dataset -h` for detailed usage instructions.
 
 
-## How to use decathlon datasets
-See [convert_msd_dataset.md](convert_msd_dataset.md)
-
 ## How to use 2D data with nnU-Net
-2D is now natively supported (yay!). See [here](#supported-file-formats) as well as the example dataset in this 
-[script](../nnunetv2/dataset_conversion/Dataset120_RoadSegmentation.py).
+2D is now natively supported (yay!), see [here](#supported-file-formats).
 
 
 ## How to update an existing dataset
-When updating a dataset it is best practice to remove the preprocessed data in `nnUNet_preprocessed/DatasetXXX_NAME` 
-to ensure a fresh start. Then replace the data in `nnUNet_raw` and rerun `nnUNetv2_plan_and_preprocess`. Optionally, 
+When updating a dataset it is best practice to remove the preprocessed data in `LongiSeg_preprocessed/DatasetXXX_NAME` 
+to ensure a fresh start. Then replace the data in `LongiSeg_raw` and rerun `nnUNetv2_plan_and_preprocess`. Optionally, 
 also remove the results from old trainings.
-
-# Example dataset conversion scripts
-In the `dataset_conversion` folder (see [here](../nnunetv2/dataset_conversion)) are multiple example scripts for 
-converting datasets into nnU-Net format. These scripts cannot be run as they are (you need to open them and change 
-some paths) but they are excellent examples for you to learn how to convert your own datasets into nnU-Net format. 
-Just pick the dataset that is closest to yours as a starting point.
-The list of dataset conversion scripts is continually updated. If you find that some publicly available dataset is 
-missing, feel free to open a PR to add it!

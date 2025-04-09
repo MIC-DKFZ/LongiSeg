@@ -4,7 +4,7 @@ import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import *
 
 from longiseg.configuration import default_num_processes
-from longiseg.paths import nnUNet_results
+from longiseg.paths import LongiSeg_results
 from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 
 
@@ -19,7 +19,7 @@ def convert_identifier_to_trainer_plans_config(identifier: str):
 def get_output_folder(dataset_name_or_id: Union[str, int], trainer_name: str = 'nnUNetTrainer',
                       plans_identifier: str = 'nnUNetPlans', configuration: str = '3d_fullres',
                       fold: Union[str, int] = None) -> str:
-    tmp = join(nnUNet_results, maybe_convert_to_dataset_name(dataset_name_or_id),
+    tmp = join(LongiSeg_results, maybe_convert_to_dataset_name(dataset_name_or_id),
                convert_trainer_plans_config_to_identifier(trainer_name, plans_identifier, configuration))
     if fold is not None:
         tmp = join(tmp, f'fold_{fold}')
@@ -106,18 +106,3 @@ def check_workers_alive_and_busy(export_pool: Pool, worker_list: List, results_l
     if sum(not_ready) >= (len(export_pool._pool) + allowed_num_queued):
         return True
     return False
-
-
-if __name__ == '__main__':
-    ### well at this point I could just write tests...
-    path = '/home/fabian/results/nnUNet_remake/Dataset002_Heart/nnUNetModule__nnUNetPlans__3d_fullres'
-    print(parse_dataset_trainer_plans_configuration_from_path(path))
-    path = 'Dataset002_Heart/nnUNetModule__nnUNetPlans__3d_fullres'
-    print(parse_dataset_trainer_plans_configuration_from_path(path))
-    path = '/home/fabian/results/nnUNet_remake/Dataset002_Heart/nnUNetModule__nnUNetPlans__3d_fullres/fold_all'
-    print(parse_dataset_trainer_plans_configuration_from_path(path))
-    try:
-        path = '/home/fabian/results/nnUNet_remake/Dataset002_Heart/'
-        print(parse_dataset_trainer_plans_configuration_from_path(path))
-    except AssertionError:
-        print('yayy, assertion works')

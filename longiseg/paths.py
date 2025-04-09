@@ -32,11 +32,6 @@ if LongiSeg_results is None:
     print("Could not find LongiSeg_results environment variable, falling back to nnUNet_results")
     LongiSeg_results = os.environ.get('nnUNet_results')
 
-# keep for compatibility
-nnUNet_raw = LongiSeg_raw
-nnUNet_preprocessed = LongiSeg_preprocessed
-nnUNet_results = LongiSeg_results
-
 if LongiSeg_raw is None:
     print("LongiSeg_raw is not defined and LongiSeg can only be used on data for which preprocessed files "
           "are already present on your system. LongiSeg cannot be used for experiment planning and preprocessing like "

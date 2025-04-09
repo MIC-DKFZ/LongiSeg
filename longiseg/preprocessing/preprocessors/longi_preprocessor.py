@@ -24,7 +24,7 @@ from batchgenerators.utilities.file_and_folder_operations import *
 from tqdm import tqdm
 
 import longiseg
-from longiseg.paths import nnUNet_preprocessed, nnUNet_raw
+from longiseg.paths import LongiSeg_preprocessed, LongiSeg_raw
 from longiseg.preprocessing.cropping.cropping import crop_to_nonzero
 from longiseg.preprocessing.resampling.default_resampling import compute_new_shape
 from longiseg.training.dataloading.nnunet_dataset import nnUNetDatasetBlosc2
@@ -251,9 +251,9 @@ class LongiSegPreprocessor(DefaultPreprocessor):
         """
         dataset_name = maybe_convert_to_dataset_name(dataset_name_or_id)
 
-        assert isdir(join(nnUNet_raw, dataset_name)), "The requested dataset could not be found in nnUNet_raw"
+        assert isdir(join(LongiSeg_raw, dataset_name)), "The requested dataset could not be found in LongiSeg_raw"
 
-        plans_file = join(nnUNet_preprocessed, dataset_name, plans_identifier + '.json')
+        plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
         assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding nnUNet_plan_experiment " \
                                    "first." % plans_file
         plans = load_json(plans_file)
@@ -265,21 +265,21 @@ class LongiSegPreprocessor(DefaultPreprocessor):
         if self.verbose:
             print(configuration_manager)
 
-        dataset_json_file = join(nnUNet_preprocessed, dataset_name, 'dataset.json')
+        dataset_json_file = join(LongiSeg_preprocessed, dataset_name, 'dataset.json')
         dataset_json = load_json(dataset_json_file)
 
-        output_directory = join(nnUNet_preprocessed, dataset_name, configuration_manager.data_identifier)
+        output_directory = join(LongiSeg_preprocessed, dataset_name, configuration_manager.data_identifier)
 
         if isdir(output_directory):
             shutil.rmtree(output_directory)
 
         maybe_mkdir_p(output_directory)
 
-        shutil.copy(join(nnUNet_raw, dataset_name, "patientsTr.json"), join(output_directory, "patientsTr.json"))
+        shutil.copy(join(LongiSeg_raw, dataset_name, "patientsTr.json"), join(output_directory, "patientsTr.json"))
 
-        patient_meta_dir = join(nnUNet_preprocessed, dataset_name, "patient_meta")
+        patient_meta_dir = join(LongiSeg_preprocessed, dataset_name, "patient_meta")
 
-        dataset = get_filenames_of_train_images_and_targets(join(nnUNet_raw, dataset_name), dataset_json)
+        dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
 
         patients = load_json(join(output_directory, "patientsTr.json"))
 

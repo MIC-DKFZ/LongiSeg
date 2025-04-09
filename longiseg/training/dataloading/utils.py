@@ -68,7 +68,3 @@ def unpack_dataset(folder: str, unpack_segmentation: bool = True, overwrite_exis
                                        [overwrite_existing] * len(npz_files),
                                        [verify] * len(npz_files))
                   )
-
-
-if __name__ == '__main__':
-    unpack_dataset('/media/fabian/data/nnUNet_preprocessed/Dataset002_Heart/2d')

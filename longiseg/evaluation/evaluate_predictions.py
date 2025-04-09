@@ -248,16 +248,3 @@ def evaluate_simple_entry_point():
 
     args = parser.parse_args()
     compute_metrics_on_folder_simple(args.gt_folder, args.pred_folder, args.l, args.o, args.np, args.il, chill=args.chill)
-
-
-if __name__ == '__main__':
-    folder_ref = '/media/fabian/data/nnUNet_raw/Dataset004_Hippocampus/labelsTr'
-    folder_pred = '/home/fabian/results/nnUNet_remake/Dataset004_Hippocampus/nnUNetModule__nnUNetPlans__3d_fullres/fold_0/validation'
-    output_file = '/home/fabian/results/nnUNet_remake/Dataset004_Hippocampus/nnUNetModule__nnUNetPlans__3d_fullres/fold_0/validation/summary.json'
-    image_reader_writer = SimpleITKIO()
-    file_ending = '.nii.gz'
-    regions = labels_to_list_of_regions([1, 2])
-    ignore_label = None
-    num_processes = 12
-    compute_metrics_on_folder(folder_ref, folder_pred, output_file, image_reader_writer, file_ending, regions, ignore_label,
-                              num_processes)

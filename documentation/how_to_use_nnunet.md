@@ -39,7 +39,7 @@ You can also process several datasets at once by giving `-d 1 2 3 [...]`. If you
 you need you can also specify that with `-c 3d_fullres` (make sure to adapt -np in this case!). For more information 
 about all the options available to you please run `nnUNetv2_plan_and_preprocess -h`.
 
-nnUNetv2_plan_and_preprocess will create a new subfolder in your nnUNet_preprocessed folder named after the dataset. 
+nnUNetv2_plan_and_preprocess will create a new subfolder in your LongiSeg_preprocessed folder named after the dataset. 
 Once the command is completed there will be a dataset_fingerprint.json file as well as a nnUNetPlans.json file for you to look at 
 (in case you are interested!). There will also be subfolders containing the preprocessed data for your UNet configurations.
 
@@ -116,14 +116,14 @@ nnUNetv2_train DATASET_NAME_OR_ID 3d_cascade_fullres FOLD [--npz]
 **Note that the 3D full resolution U-Net of the cascade requires the five folds of the low resolution U-Net to be
 completed!**
 
-The trained models will be written to the nnUNet_results folder. Each training obtains an automatically generated
+The trained models will be written to the LongiSeg_results folder. Each training obtains an automatically generated
 output folder name:
 
-nnUNet_results/DatasetXXX_MYNAME/TRAINER_CLASS_NAME__PLANS_NAME__CONFIGURATION/FOLD
+LongiSeg_results/DatasetXXX_MYNAME/TRAINER_CLASS_NAME__PLANS_NAME__CONFIGURATION/FOLD
 
 For Dataset002_Heart (from the MSD), for example, this looks like this:
 
-    nnUNet_results/
+    LongiSeg_results/
     ├── Dataset002_Heart
         │── nnUNetTrainer__nnUNetPlans__2d
         │    ├── fold_0
@@ -231,7 +231,7 @@ Postprocessing in nnU-Net only considers the removal of all but the largest comp
 foreground vs background and once for each label/region).
 
 Once completed, the command will print to your console exactly what commands you need to run to make predictions. It 
-will also create two files in the `nnUNet_results/DATASET_NAME` folder for you to inspect: 
+will also create two files in the `LongiSeg_results/DATASET_NAME` folder for you to inspect: 
 - `inference_instructions.txt` again contains the exact commands you need to use for predictions
 - `inference_information.json` can be inspected to see the performance of all configurations and ensembles, as well 
 as the effect of the postprocessing plus some debug information. 
