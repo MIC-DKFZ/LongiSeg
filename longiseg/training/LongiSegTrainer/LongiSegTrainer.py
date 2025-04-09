@@ -490,7 +490,6 @@ class LongiSegTrainer(nnUNetTrainerLongi):
         data_current = batch['data_current']
         target_current = batch['target_current']
         data_prior = batch['data_prior']
-        target_prior = batch['target_prior']
 
         data_current = data_current.to(self.device, non_blocking=True)
         data_prior = data_prior.to(self.device, non_blocking=True)
@@ -499,11 +498,6 @@ class LongiSegTrainer(nnUNetTrainerLongi):
             target_current = [i.to(self.device, non_blocking=True) for i in target_current]
         else:
             target_current = target_current.to(self.device, non_blocking=True)
-        if isinstance(target_prior, list):
-            # if we use target_prior, we only care about the highest resolution target
-            target_prior = target_prior[0].to(self.device, non_blocking=True)
-        else:
-            target_prior = target_prior.to(self.device, non_blocking=True)
 
         self.optimizer.zero_grad(set_to_none=True)
         # Autocast can be annoying
@@ -511,8 +505,8 @@ class LongiSegTrainer(nnUNetTrainerLongi):
         # If the device_type is 'mps' then it will complain that mps is not implemented, even if enabled=False is set. Whyyyyyyy. (this is why we don't make use of enabled=False)
         # So autocast will only be active if we have a cuda device.
         with autocast(self.device.type, enabled=True) if self.device.type == 'cuda' else dummy_context():
-            # every longitudinal network should take data_current, data_prior, target_prior as input, even if not all are used
-            output = self.network(data_current, data_prior, target_prior)
+            # every longitudinal network should take data_current, data_prior as input
+            output = self.network(data_current, data_prior)
             # del data
             l = self.loss(output, target_current)
 
@@ -532,7 +526,6 @@ class LongiSegTrainer(nnUNetTrainerLongi):
         data_current = batch['data_current']
         target_current = batch['target_current']
         data_prior = batch['data_prior']
-        target_prior = batch['target_prior']
 
         data_current = data_current.to(self.device, non_blocking=True)
         data_prior = data_prior.to(self.device, non_blocking=True)
@@ -541,19 +534,14 @@ class LongiSegTrainer(nnUNetTrainerLongi):
             target_current = [i.to(self.device, non_blocking=True) for i in target_current]
         else:
             target_current = target_current.to(self.device, non_blocking=True)
-        if isinstance(target_prior, list):
-            # if we use target_prior, we only care about the highest resolution target
-            target_prior = target_prior[0].to(self.device, non_blocking=True)
-        else:
-            target_prior = target_prior.to(self.device, non_blocking=True)
 
         # Autocast can be annoying
         # If the device_type is 'cpu' then it's slow as heck and needs to be disabled.
         # If the device_type is 'mps' then it will complain that mps is not implemented, even if enabled=False is set. Whyyyyyyy. (this is why we don't make use of enabled=False)
         # So autocast will only be active if we have a cuda device.
         with autocast(self.device.type, enabled=True) if self.device.type == 'cuda' else dummy_context():
-            # every longitudinal network should take data_current, data_prior, target_prior as input, even if not all are used
-            output = self.network(data_current, data_prior, target_prior)
+            # every longitudinal network should take data_current, data_prior as input, even if not all are used
+            output = self.network(data_current, data_prior)
             del data_current
             l = self.loss(output, target_current)
 

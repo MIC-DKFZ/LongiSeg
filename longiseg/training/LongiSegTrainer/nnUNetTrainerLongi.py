@@ -50,7 +50,7 @@ from longiseg.inference.predict_from_raw_data import nnUNetPredictor
 from longiseg.inference.sliding_window_prediction import compute_gaussian
 from longiseg.paths import LongiSeg_preprocessed, LongiSeg_results
 from longiseg.training.data_augmentation.compute_initial_patch_size import get_patch_size
-from longiseg.training.dataloading.nnunet_dataset import infer_dataset_class
+from longiseg.training.dataloading.nnunet_dataset_longi import infer_dataset_class
 from longiseg.training.dataloading.data_loader import nnUNetDataLoader
 from longiseg.training.logging.nnunet_logger import nnUNetLogger
 from longiseg.training.loss.compound_losses import DC_and_CE_loss, DC_and_BCE_loss
