@@ -44,14 +44,14 @@ from longiseg.utilities.crossval_split import generate_crossval_split_longi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 from longiseg.utilities.file_path_utilities import check_workers_alive_and_busy
 from longiseg.utilities.helpers import dummy_context
-from longiseg.utilities.label_handling.label_handling import convert_labelmap_to_one_hot, determine_num_input_channels
+from longiseg.utilities.label_handling.label_handling import determine_num_input_channels
 from longiseg.training.data_augmentation.custom_transforms.longi_transforms import MergeTransform, SplitTransform, \
     ConvertSegToOneHot, DownsampleSegForDSTransformLongi
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 
 
-class LongiSegTrainer(nnUNetTrainer):
+class LongiSegTrainer(nnUNetTrainerLongi):
     architecture_class_name = "LongiUNet"
 
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,

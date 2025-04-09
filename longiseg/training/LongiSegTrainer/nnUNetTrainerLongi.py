@@ -58,7 +58,7 @@ from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
 from longiseg.training.loss.dice import get_tp_fp_fn_tn, MemoryEfficientSoftDiceLoss
 from longiseg.training.lr_scheduler.polylr import PolyLRScheduler
 from longiseg.utilities.collate_outputs import collate_outputs
-from longiseg.utilities.crossval_split import generate_crossval_split
+from longiseg.utilities.crossval_split import generate_crossval_split_longi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 from longiseg.utilities.file_path_utilities import check_workers_alive_and_busy
 from longiseg.utilities.get_network_from_plans import get_network_from_plans
@@ -67,25 +67,9 @@ from longiseg.utilities.label_handling.label_handling import convert_labelmap_to
 from longiseg.utilities.plans_handling.plans_handler import PlansManager
 
 
-class nnUNetTrainer(object):
+class nnUNetTrainerLongi(object):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
                  device: torch.device = torch.device('cuda')):
-        # From https://grugbrain.dev/. Worth a read ya big brains ;-)
-
-        # apex predator of grug is complexity
-        # complexity bad
-        # say again:
-        # complexity very bad
-        # you say now:
-        # complexity very, very bad
-        # given choice between complexity or one on one against t-rex, grug take t-rex: at least grug see t-rex
-        # complexity is spirit demon that enter codebase through well-meaning but ultimately very clubbable non grug-brain developers and project managers who not fear complexity spirit demon or even know about sometime
-        # one day code base understandable and grug can get work done, everything good!
-        # next day impossible: complexity demon spirit has entered code and very dangerous situation!
-
-        # OK OK I am guilty. But I tried.
-        # https://www.osnews.com/images/comics/wtfm.jpg
-        # https://i.pinimg.com/originals/26/b2/50/26b250a738ea4abc7a5af4d42ad93af0.jpg
 
         self.is_ddp = dist.is_available() and dist.is_initialized()
         self.local_rank = 0 if not self.is_ddp else dist.get_rank()
@@ -163,9 +147,7 @@ class nnUNetTrainer(object):
         self.grad_scaler = GradScaler("cuda") if self.device.type == 'cuda' else None
         self.loss = None  # -> self.initialize
 
-        ### Simple logging. Don't take that away from me!
         # initialize log file. This is just our log for the print statements etc. Not to be confused with lightning
-        # logging
         timestamp = datetime.now()
         maybe_mkdir_p(self.output_folder)
         self.log_file = join(self.output_folder, "training_log_%d_%d_%d_%02.0d_%02.0d_%02.0d.txt" %
@@ -181,7 +163,6 @@ class nnUNetTrainer(object):
 
         ### inference things
         self.inference_allowed_mirroring_axes = None  # this variable is set in
-        # self.configure_rotation_dummyDA_mirroring_and_inital_patch_size and will be saved in checkpoints
 
         ### checkpoint saving stuff
         self.save_every = 50
@@ -246,28 +227,28 @@ class nnUNetTrainer(object):
 
         # compile does not work on mps
         if self.device == torch.device('mps'):
-            if 'nnUNet_compile' in os.environ.keys() and os.environ['nnUNet_compile'].lower() in ('true', '1', 't'):
+            if 'LongiSeg_compile' in os.environ.keys() and os.environ['LongiSeg_compile'].lower() in ('true', '1', 't'):
                 self.print_to_log_file("INFO: torch.compile disabled because of unsupported mps device")
             return False
 
         # CPU compile crashes for 2D models. Not sure if we even want to support CPU compile!? Better disable
         if self.device == torch.device('cpu'):
-            if 'nnUNet_compile' in os.environ.keys() and os.environ['nnUNet_compile'].lower() in ('true', '1', 't'):
+            if 'LongiSeg_compile' in os.environ.keys() and os.environ['LongiSeg_compile'].lower() in ('true', '1', 't'):
                 self.print_to_log_file("INFO: torch.compile disabled because device is CPU")
             return False
 
         # default torch.compile doesn't work on windows because there are apparently no triton wheels for it
         # https://discuss.pytorch.org/t/windows-support-timeline-for-torch-compile/182268/2
         if os.name == 'nt':
-            if 'nnUNet_compile' in os.environ.keys() and os.environ['nnUNet_compile'].lower() in ('true', '1', 't'):
+            if 'LongiSeg_compile' in os.environ.keys() and os.environ['LongiSeg_compile'].lower() in ('true', '1', 't'):
                 self.print_to_log_file("INFO: torch.compile disabled because Windows is not natively supported. If "
                                        "you know what you are doing, check https://discuss.pytorch.org/t/windows-support-timeline-for-torch-compile/182268/2")
             return False
 
-        if 'nnUNet_compile' not in os.environ.keys():
+        if 'LongiSeg_compile' not in os.environ.keys():
             return True
         else:
-            return os.environ['nnUNet_compile'].lower() in ('true', '1', 't')
+            return os.environ['LongiSeg_compile'].lower() in ('true', '1', 't')
 
     def _save_debug_information(self):
         # saving some debug information
@@ -516,7 +497,7 @@ class nnUNetTrainer(object):
 
     def plot_network_architecture(self):
         if self._do_i_compile():
-            self.print_to_log_file("Unable to plot network architecture: nnUNet_compile is enabled!")
+            self.print_to_log_file("Unable to plot network architecture: LongiSeg_compile is enabled!")
             return
 
     def do_split(self):
@@ -546,8 +527,7 @@ class nnUNetTrainer(object):
             # if the split file does not exist we need to create it
             if not isfile(splits_file):
                 self.print_to_log_file("Creating new 5-fold cross-validation split...")
-                all_keys_sorted = list(np.sort(list(dataset.identifiers)))
-                splits = generate_crossval_split(all_keys_sorted, seed=12345, n_splits=5)
+                splits = generate_crossval_split_longi(dataset.patients, seed=12345, n_splits=5)
                 save_json(splits, splits_file)
 
             else:
@@ -902,8 +882,8 @@ class nnUNetTrainer(object):
 
         self._save_debug_information()
 
-        # print(f"batch size: {self.batch_size}")
-        # print(f"oversample: {self.oversample_foreground_percent}")
+        shutil.copy(join(self.preprocessed_dataset_folder, 'patientsTr.json'),
+                    join(self.output_folder_base, 'patientsTr.json'))
 
     def on_train_end(self):
         # dirty hack because on_epoch_end increments the epoch counter and this is executed afterwards.
@@ -1247,7 +1227,7 @@ class nnUNetTrainer(object):
                 with warnings.catch_warnings():
                     # ignore 'The given NumPy array is not writable' warning
                     warnings.simplefilter("ignore")
-                    data = torch.from_numpy(data)
+                    data = torch.from_numpy(data[:])
 
                 self.print_to_log_file(f'{k}, shape {data.shape}, rank {self.local_rank}')
                 output_filename_truncated = join(validation_output_folder, k)

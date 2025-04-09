@@ -10,7 +10,7 @@ import torch.multiprocessing as mp
 from batchgenerators.utilities.file_and_folder_operations import join, isfile, load_json
 from longiseg.paths import LongiSeg_preprocessed
 from longiseg.run.load_pretrained_weights import load_pretrained_weights
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 from longiseg.utilities.find_class_by_name import recursive_find_python_class
 from torch.backends import cudnn
@@ -32,7 +32,7 @@ def find_free_network_port() -> int:
 def get_trainer_from_args(dataset_name_or_id: Union[int, str],
                           configuration: str,
                           fold: int,
-                          trainer_name: str = 'nnUNetTrainer',
+                          trainer_name: str = 'nnUNetTrainerLongi',
                           plans_identifier: str = 'nnUNetPlans',
                           device: torch.device = torch.device('cuda')):
     # load nnunet class and do sanity checks
@@ -43,8 +43,8 @@ def get_trainer_from_args(dataset_name_or_id: Union[int, str],
                            f'longiseg.training.LongiSegTrainer ('
                            f'{join(longiseg.__path__[0], "training", "LongiSegTrainer")}). If it is located somewhere '
                            f'else, please move it there.')
-    assert issubclass(nnunet_trainer, nnUNetTrainer), 'The requested nnunet trainer class must inherit from ' \
-                                                    'nnUNetTrainer'
+    assert issubclass(nnunet_trainer, nnUNetTrainerLongi), 'The requested nnunet trainer class must inherit from ' \
+                                                    'nnUNetTrainerLongi'
 
     # handle dataset input. If it's an ID we need to convert to int from string
     if dataset_name_or_id.startswith('Dataset'):
@@ -67,7 +67,7 @@ def get_trainer_from_args(dataset_name_or_id: Union[int, str],
     return nnunet_trainer
 
 
-def maybe_load_checkpoint(nnunet_trainer: nnUNetTrainer, continue_training: bool, validation_only: bool,
+def maybe_load_checkpoint(nnunet_trainer: nnUNetTrainerLongi, continue_training: bool, validation_only: bool,
                           pretrained_weights_file: str = None):
     if continue_training and pretrained_weights_file is not None:
         raise RuntimeError('Cannot both continue a training AND load pretrained weights. Pretrained weights can only '
@@ -136,7 +136,7 @@ def run_ddp(rank, dataset_name_or_id, configuration, fold, tr, p, disable_checkp
 
 def run_training(dataset_name_or_id: Union[str, int],
                  configuration: str, fold: Union[int, str],
-                 trainer_class_name: str = 'nnUNetTrainer',
+                 trainer_class_name: str = 'nnUNetTrainerLongi',
                  plans_identifier: str = 'nnUNetPlans',
                  pretrained_weights: Optional[str] = None,
                  num_gpus: int = 1,
@@ -220,8 +220,8 @@ def run_training_entry():
                         help="Configuration that should be trained")
     parser.add_argument('fold', type=str,
                         help='Fold of the 5-fold cross-validation. Should be an int between 0 and 4.')
-    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainer',
-                        help='[OPTIONAL] Use this flag to specify a custom trainer. Default: nnUNetTrainer')
+    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainerLongi',
+                        help='[OPTIONAL] Use this flag to specify a custom trainer. Default: nnUNetTrainerLongi')
     parser.add_argument('-p', type=str, required=False, default='nnUNetPlans',
                         help='[OPTIONAL] Use this flag to specify a custom plans identifier. Default: nnUNetPlans')
     parser.add_argument('-pretrained_weights', type=str, required=False, default=None,

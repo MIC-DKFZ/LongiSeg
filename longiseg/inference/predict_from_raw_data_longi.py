@@ -28,6 +28,7 @@ class LongiSegPredictor(nnUNetPredictor):
         """
         This is used when making predictions with a trained model
         """
+
         if use_folds is None:
             use_folds = nnUNetPredictor.auto_detect_available_folds(model_training_output_dir, checkpoint_name)
 
@@ -59,8 +60,8 @@ class LongiSegPredictor(nnUNetPredictor):
         if trainer_class is None:
             raise RuntimeError(f'Unable to locate trainer class {trainer_name} in longiseg.training.LongiSegTrainer. '
                                f'Please place it there (in any .py file)!')
-        print(trainer_class)
-        if hasattr(trainer_class, 'architecture_class_name'):
+        self.is_longitudinal=hasattr(trainer_class, 'architecture_class_name')
+        if self.is_longitudinal:
             network = trainer_class.build_network_architecture(
                 trainer_class.architecture_class_name,
                 configuration_manager.network_arch_class_name,
@@ -96,7 +97,7 @@ class LongiSegPredictor(nnUNetPredictor):
         self.trainer_name = trainer_name
         self.allowed_mirroring_axes = inference_allowed_mirroring_axes
         self.label_manager = plans_manager.get_label_manager(dataset_json)
-        if ('nnUNet_compile' in os.environ.keys()) and (os.environ['nnUNet_compile'].lower() in ('true', '1', 't')) \
+        if ('LongiSeg_compile' in os.environ.keys()) and (os.environ['LongiSeg_compile'].lower() in ('true', '1', 't')) \
                 and not isinstance(self.network, OptimizedModule):
             print('Using torch.compile')
             self.network = torch.compile(self.network)
@@ -196,6 +197,7 @@ class LongiSegPredictor(nnUNetPredictor):
         data_iterator = self._internal_get_data_iterator_from_lists_of_filenames(list_of_lists,
                                                                                  seg_from_prev_stage_files,
                                                                                  output_filename_truncated,
+                                                                                 self.is_longitudinal,
                                                                                  num_processes_preprocessing)
 
         return self.predict_from_data_iterator(data_iterator, save_probabilities, num_processes_segmentation_export)
@@ -204,11 +206,11 @@ class LongiSegPredictor(nnUNetPredictor):
                                                             input_list_of_lists: List[List[str]],
                                                             seg_from_prev_stage_files: Union[List[str], None],
                                                             output_filenames_truncated: Union[List[str], None],
-                                                            num_processes: int):
+                                                            is_longitudinal: bool, num_processes: int):
         return preprocessing_patients_iterator_fromfiles(input_list_of_lists, seg_from_prev_stage_files,
                                                 output_filenames_truncated, self.plans_manager, self.dataset_json,
-                                                self.configuration_manager, num_processes, self.device.type == 'cuda',
-                                                self.verbose_preprocessing)
+                                                self.configuration_manager, is_longitudinal, num_processes, 
+                                                self.device.type == 'cuda', self.verbose_preprocessing)
 
 
 def predict_longi_entry_point_modelfolder():

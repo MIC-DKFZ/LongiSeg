@@ -1,7 +1,7 @@
 import torch
 
 from longiseg.training.lr_scheduler.polylr import PolyLRScheduler
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 from torch.optim.lr_scheduler import CosineAnnealingLR
 try:
     from adan_pytorch import Adan
@@ -9,7 +9,7 @@ except ImportError:
     Adan = None
 
 
-class nnUNetTrainerAdan(nnUNetTrainer):
+class nnUNetTrainerAdan(nnUNetTrainerLongi):
     def configure_optimizers(self):
         if Adan is None:
             raise RuntimeError('This trainer requires adan_pytorch to be installed, install with "pip install adan-pytorch"')

@@ -4,10 +4,10 @@ import numpy as np
 from batchgeneratorsv2.helpers.scalar_type import RandomScalar
 from batchgeneratorsv2.transforms.base.basic_transform import BasicTransform
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 
 
-class nnUNetTrainerNoDA(nnUNetTrainer):
+class nnUNetTrainerNoDA(nnUNetTrainerLongi):
     @staticmethod
     def get_training_transforms(
             patch_size: Union[np.ndarray, Tuple[int]],
@@ -21,7 +21,7 @@ class nnUNetTrainerNoDA(nnUNetTrainer):
             regions: List[Union[List[int], Tuple[int, ...], int]] = None,
             ignore_label: int = None,
     ) -> BasicTransform:
-        return nnUNetTrainer.get_validation_transforms(deep_supervision_scales, is_cascaded, foreground_labels,
+        return nnUNetTrainerLongi.get_validation_transforms(deep_supervision_scales, is_cascaded, foreground_labels,
                                                        regions, ignore_label)
 
     def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):

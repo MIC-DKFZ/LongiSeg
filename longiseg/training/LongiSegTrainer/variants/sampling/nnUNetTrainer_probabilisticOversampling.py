@@ -2,10 +2,10 @@ import numpy as np
 import torch
 from torch import distributed as dist
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 
 
-class nnUNetTrainer_probabilisticOversampling(nnUNetTrainer):
+class nnUNetTrainer_probabilisticOversampling(nnUNetTrainerLongi):
     """
     sampling of foreground happens randomly and not for the last 33% of samples in a batch
     since most trainings happen with batch size 2 and nnunet guarantees at least one fg sample, effectively this can

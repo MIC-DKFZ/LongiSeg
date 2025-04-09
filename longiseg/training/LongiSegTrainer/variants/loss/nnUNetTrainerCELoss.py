@@ -1,11 +1,11 @@
 import torch
 from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 from longiseg.training.loss.robust_ce_loss import RobustCrossEntropyLoss
 import numpy as np
 
 
-class nnUNetTrainerCELoss(nnUNetTrainer):
+class nnUNetTrainerCELoss(nnUNetTrainerLongi):
     def _build_loss(self):
         assert not self.label_manager.has_regions, "regions not supported by this trainer"
         loss = RobustCrossEntropyLoss(

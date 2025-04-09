@@ -1,9 +1,9 @@
 import torch
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 
 
-class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainer):
+class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainerLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -17,7 +17,7 @@ class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainer):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
 
-class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainer):
+class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainerLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -31,7 +31,7 @@ class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainer):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
     
-class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainer):
+class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainerLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -45,7 +45,7 @@ class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainer):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
 
-class nnUNetTrainer_8000epochs_NoMirroring(nnUNetTrainer):
+class nnUNetTrainer_8000epochs_NoMirroring(nnUNetTrainerLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)

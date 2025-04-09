@@ -2,10 +2,10 @@ from typing import Union, Tuple, List
 from dynamic_network_architectures.building_blocks.helper import get_matching_batchnorm
 from torch import nn
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 
 
-class nnUNetTrainerBN(nnUNetTrainer):
+class nnUNetTrainerBN(nnUNetTrainerLongi):
     @staticmethod
     def build_network_architecture(architecture_class_name: str,
                                    arch_init_kwargs: dict,
@@ -24,7 +24,7 @@ class nnUNetTrainerBN(nnUNetTrainer):
         arch_init_kwargs['norm_op'] = bn_class.__module__ + '.' + bn_class.__name__
         arch_init_kwargs['norm_op_kwargs'] = {'eps': 1e-5, 'affine': True}
 
-        return nnUNetTrainer.build_network_architecture(architecture_class_name,
+        return nnUNetTrainerLongi.build_network_architecture(architecture_class_name,
                                                         arch_init_kwargs,
                                                         arch_init_kwargs_req_import,
                                                         num_input_channels,

@@ -1,8 +1,8 @@
-from longiseg.training.LongiSegTrainer.nnUNetTrainer import nnUNetTrainer
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
 import torch
 
 
-class nnUNetTrainerNoDeepSupervision(nnUNetTrainer):
+class nnUNetTrainerNoDeepSupervision(nnUNetTrainerLongi):
     def __init__(
         self,
         plans: dict,

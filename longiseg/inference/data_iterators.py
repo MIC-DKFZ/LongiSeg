@@ -125,6 +125,7 @@ def preprocess_patients_fromfiles_save_to_queue(list_of_lists: List[List[str]],
                                        plans_manager: PlansManager,
                                        dataset_json: dict,
                                        configuration_manager: ConfigurationManager,
+                                       is_longitudinal: bool,
                                        target_queue: Queue,
                                        done_event: Event,
                                        abort_event: Event,
@@ -148,7 +149,10 @@ def preprocess_patients_fromfiles_save_to_queue(list_of_lists: List[List[str]],
                                                     dataset_json,
                                                     bbox=[[None, None], [None, None], [None, None]])
 
-            data = np.vstack((data_c, data_p))
+            if is_longitudinal:
+                data = np.vstack((data_c, data_p))
+            else:
+                data = data_c
 
             if list_of_segs_from_prev_stage_files is not None and list_of_segs_from_prev_stage_files[idx] is not None:
                 raise NotImplementedError("Cascaded is not implemented for longitudinal segmentation")
@@ -179,6 +183,7 @@ def preprocessing_patients_iterator_fromfiles(list_of_lists: List[List[str]],
                                      plans_manager: PlansManager,
                                      dataset_json: dict,
                                      configuration_manager: ConfigurationManager,
+                                     is_longitudinal: bool,
                                      num_processes: int,
                                      pin_memory: bool = False,
                                      verbose: bool = False):
@@ -203,6 +208,7 @@ def preprocessing_patients_iterator_fromfiles(list_of_lists: List[List[str]],
                          plans_manager,
                          dataset_json,
                          configuration_manager,
+                         is_longitudinal,
                          queue,
                          event,
                          abort_event,
