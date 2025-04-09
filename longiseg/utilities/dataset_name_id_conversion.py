@@ -13,9 +13,11 @@
 #    limitations under the License.
 from typing import Union
 
-from longiseg.paths import LongiSeg_preprocessed, LongiSeg_raw, LongiSeg_results
-from batchgenerators.utilities.file_and_folder_operations import *
+import os
 import numpy as np
+
+from longiseg.paths import LongiSeg_preprocessed, LongiSeg_raw, LongiSeg_results
+from batchgenerators.utilities.file_and_folder_operations import subdirs, isdir
 
 
 def find_candidate_datasets(dataset_id: int):

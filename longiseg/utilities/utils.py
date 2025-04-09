@@ -12,11 +12,13 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import List
+
 import os.path
 from functools import lru_cache
 from typing import Union
 
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import subfiles, subdirs, isdir, join, load_json
 import numpy as np
 import re
 

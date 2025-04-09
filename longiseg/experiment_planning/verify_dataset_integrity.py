@@ -12,6 +12,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import List
+
 import multiprocessing
 import re
 from multiprocessing import Pool
@@ -19,7 +21,7 @@ from typing import Type
 
 import numpy as np
 import pandas as pd
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import subfiles, isfile, isdir, join, load_json
 
 from longiseg.imageio.base_reader_writer import BaseReaderWriter
 from longiseg.imageio.reader_writer_registry import determine_reader_writer_from_dataset_json

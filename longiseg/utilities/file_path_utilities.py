@@ -1,7 +1,10 @@
-from multiprocessing import Pool
+from typing import List
+
+from multiprocessing.pool import Pool
 from typing import Union, Tuple
 import numpy as np
-from batchgenerators.utilities.file_and_folder_operations import *
+import os
+from batchgenerators.utilities.file_and_folder_operations import split_path, join
 
 from longiseg.configuration import default_num_processes
 from longiseg.paths import LongiSeg_results

@@ -1,7 +1,7 @@
 import importlib
 import pkgutil
 
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import join
 
 
 def recursive_find_python_class(folder: str, class_name: str, current_module: str):

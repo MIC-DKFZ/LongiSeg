@@ -17,7 +17,7 @@ from typing import Tuple, Union
 
 import numpy as np
 import pandas as pd
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, load_json, isfile, isdir, join
 from longiseg.configuration import default_num_processes
 from longiseg.imageio.base_reader_writer import BaseReaderWriter
 from longiseg.imageio.reader_writer_registry import determine_reader_writer_from_dataset_json

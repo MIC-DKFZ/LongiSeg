@@ -1,7 +1,7 @@
 from typing import Optional
 
 import requests
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import join, isfile
 from time import time
 from longiseg.model_sharing.model_import import install_model_from_zip_file
 from longiseg.paths import LongiSeg_results

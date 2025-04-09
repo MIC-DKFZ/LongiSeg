@@ -11,6 +11,8 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+from typing import List, Union
+
 import math
 import multiprocessing
 import shutil
@@ -20,7 +22,7 @@ from typing import Tuple
 import SimpleITK
 import numpy as np
 import pandas as pd
-from batchgenerators.utilities.file_and_folder_operations import *
+from batchgenerators.utilities.file_and_folder_operations import maybe_mkdir_p, isdir, isfile, join, load_json
 from tqdm import tqdm
 
 import longiseg
