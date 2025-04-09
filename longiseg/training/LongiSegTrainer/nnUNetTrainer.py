@@ -190,7 +190,11 @@ class nnUNetTrainer(object):
         self.was_initialized = False
 
         self.print_to_log_file("\n#######################################################################\n"
-                               "Please cite the following paper when using nnU-Net:\n"
+                               "Please cite the following papers when using LongiSeg:\n"
+                               "Rokuss, M., Kirchhoff, Y. ..., Maier-Hein, K. "
+                               "Longitudinal segmentation of MS lesions via temporal Difference Weighting "
+                               "Medical Image Computing and Computer Assisted Intervention – MICCAI 2024 Workshops. "
+                               "Vol. 15401, Springer, 2025\n"
                                "Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). "
                                "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. "
                                "Nature methods, 18(2), 203-211.\n"

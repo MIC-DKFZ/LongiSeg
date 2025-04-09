@@ -264,11 +264,16 @@ def predict_longi_entry_point_modelfolder():
                              'jobs)')
 
     print(
-        "\n#######################################################################\nPlease cite the following paper "
-        "when using nnU-Net:\n"
+        "\n#######################################################################\n"
+        "Please cite the following papers when using LongiSeg:\n"
+        "Rokuss, M., Kirchhoff, Y. ..., Maier-Hein, K. "
+        "Longitudinal segmentation of MS lesions via temporal Difference Weighting "
+        "Medical Image Computing and Computer Assisted Intervention – MICCAI 2024 Workshops. "
+        "Vol. 15401, Springer, 2025\n"
         "Isensee, F., Jaeger, P. F., Kohl, S. A., Petersen, J., & Maier-Hein, K. H. (2021). "
         "nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation. "
-        "Nature methods, 18(2), 203-211.\n#######################################################################\n")
+        "Nature methods, 18(2), 203-211.\n"
+        "#######################################################################\n")
 
     args = parser.parse_args()
     args.f = [i if i == 'all' else int(i) for i in args.f]
