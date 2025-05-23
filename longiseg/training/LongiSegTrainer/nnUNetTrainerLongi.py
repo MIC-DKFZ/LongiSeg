@@ -67,7 +67,9 @@ from longiseg.utilities.label_handling.label_handling import convert_labelmap_to
 from longiseg.utilities.plans_handling.plans_handler import PlansManager
 
 
-class nnUNetTrainerLongi(object):
+class nnUNetTrainerNoLongi(object):
+    print("Using 'nnUNetTrainerNoLongi', which does not take temporal context into account.\n"
+          "Use 'LongiSegTrainer' instead for temporal context.")
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
                  device: torch.device = torch.device('cuda')):
 
@@ -1332,3 +1334,11 @@ class nnUNetTrainerLongi(object):
             self.on_epoch_end()
 
         self.on_train_end()
+    
+
+class nnUNetTrainerLongi(nnUNetTrainerNoLongi):
+    warnings.warn(
+        "This trainer is deprecated, please use nnUNetTrainerLongiSeg instead.\n"
+        "nnUNetTrainerLongi does NOT use longitudinal information but is just a wrapper for nnUNetTrainer\n"
+        "with proper handling of patient level splits for 5 fold cross validation.\n"
+    )
