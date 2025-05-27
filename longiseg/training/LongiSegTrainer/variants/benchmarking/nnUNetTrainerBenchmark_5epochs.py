@@ -3,11 +3,11 @@ import subprocess
 import torch
 from batchgenerators.utilities.file_and_folder_operations import save_json, join, isfile, load_json
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 from torch import distributed as dist
 
 
-class nnUNetTrainerBenchmark_5epochs(nnUNetTrainerLongi):
+class nnUNetTrainerBenchmark_5epochs(nnUNetTrainerNoLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)

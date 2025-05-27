@@ -1,9 +1,9 @@
 from longiseg.training.data_augmentation.compute_initial_patch_size import get_patch_size
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 import numpy as np
 
 
-class nnUNetTrainer_noDummy2DDA(nnUNetTrainerLongi):
+class nnUNetTrainer_noDummy2DDA(nnUNetTrainerNoLongi):
     def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):
         do_dummy_2d_data_aug = False
 

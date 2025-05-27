@@ -31,12 +31,12 @@ from longiseg.training.data_augmentation.custom_transforms.transforms_for_dummy_
     Convert2DTo3DTransform
 from longiseg.training.dataloading.data_loader import nnUNetDataLoader
 from longiseg.training.loss.dice import get_tp_fp_fn_tn
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 from longiseg.utilities.helpers import dummy_context
 
 
-class nnUNetTrainerDA5(nnUNetTrainerLongi):
+class nnUNetTrainerDA5(nnUNetTrainerNoLongi):
     def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):
         patch_size = self.configuration_manager.patch_size
         dim = len(patch_size)

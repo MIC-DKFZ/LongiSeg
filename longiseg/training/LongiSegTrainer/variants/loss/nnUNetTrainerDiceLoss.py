@@ -4,11 +4,11 @@ import torch
 from longiseg.training.loss.compound_losses import DC_and_BCE_loss, DC_and_CE_loss
 from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
 from longiseg.training.loss.dice import MemoryEfficientSoftDiceLoss
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 from longiseg.utilities.helpers import softmax_helper_dim1
 
 
-class nnUNetTrainerDiceLoss(nnUNetTrainerLongi):
+class nnUNetTrainerDiceLoss(nnUNetTrainerNoLongi):
     def _build_loss(self):
         loss = MemoryEfficientSoftDiceLoss(**{'batch_dice': self.configuration_manager.batch_dice,
                                     'do_bg': self.label_manager.has_regions, 'smooth': 1e-5, 'ddp': self.is_ddp},
@@ -29,7 +29,7 @@ class nnUNetTrainerDiceLoss(nnUNetTrainerLongi):
         return loss
 
 
-class nnUNetTrainerDiceCELoss_noSmooth(nnUNetTrainerLongi):
+class nnUNetTrainerDiceCELoss_noSmooth(nnUNetTrainerNoLongi):
     def _build_loss(self):
         # set smooth to 0
         if self.label_manager.has_regions:

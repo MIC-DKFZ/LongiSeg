@@ -1,11 +1,11 @@
 from longiseg.training.loss.compound_losses import DC_and_topk_loss
 from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 import numpy as np
 from longiseg.training.loss.robust_ce_loss import TopKLoss
 
 
-class nnUNetTrainerTopk10Loss(nnUNetTrainerLongi):
+class nnUNetTrainerTopk10Loss(nnUNetTrainerNoLongi):
     def _build_loss(self):
         assert not self.label_manager.has_regions, "regions not supported by this trainer"
         loss = TopKLoss(
@@ -27,7 +27,7 @@ class nnUNetTrainerTopk10Loss(nnUNetTrainerLongi):
         return loss
 
 
-class nnUNetTrainerTopk10LossLS01(nnUNetTrainerLongi):
+class nnUNetTrainerTopk10LossLS01(nnUNetTrainerNoLongi):
     def _build_loss(self):
         assert not self.label_manager.has_regions, "regions not supported by this trainer"
         loss = TopKLoss(
@@ -51,7 +51,7 @@ class nnUNetTrainerTopk10LossLS01(nnUNetTrainerLongi):
         return loss
 
 
-class nnUNetTrainerDiceTopK10Loss(nnUNetTrainerLongi):
+class nnUNetTrainerDiceTopK10Loss(nnUNetTrainerNoLongi):
     def _build_loss(self):
         assert not self.label_manager.has_regions, "regions not supported by this trainer"
         loss = DC_and_topk_loss(

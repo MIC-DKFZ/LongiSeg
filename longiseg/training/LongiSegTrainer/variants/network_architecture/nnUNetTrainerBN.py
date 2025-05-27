@@ -2,10 +2,10 @@ from typing import Union, Tuple, List
 from dynamic_network_architectures.building_blocks.helper import get_matching_batchnorm
 from torch import nn
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 
 
-class nnUNetTrainerBN(nnUNetTrainerLongi):
+class nnUNetTrainerBN(nnUNetTrainerNoLongi):
     @staticmethod
     def build_network_architecture(architecture_class_name: str,
                                    arch_init_kwargs: dict,

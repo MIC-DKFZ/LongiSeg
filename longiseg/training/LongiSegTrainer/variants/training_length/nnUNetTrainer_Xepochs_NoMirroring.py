@@ -1,9 +1,9 @@
 import torch
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 
 
-class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainerLongi):
+class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainerNoLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -17,7 +17,7 @@ class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainerLongi):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
 
-class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainerLongi):
+class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainerNoLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -31,7 +31,7 @@ class nnUNetTrainer_2000epochs_NoMirroring(nnUNetTrainerLongi):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
     
-class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainerLongi):
+class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainerNoLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)
@@ -45,7 +45,7 @@ class nnUNetTrainer_4000epochs_NoMirroring(nnUNetTrainerLongi):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
 
-class nnUNetTrainer_8000epochs_NoMirroring(nnUNetTrainerLongi):
+class nnUNetTrainer_8000epochs_NoMirroring(nnUNetTrainerNoLongi):
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict, 
                  device: torch.device = torch.device('cuda')):
         super().__init__(plans, configuration, fold, dataset_json, device)

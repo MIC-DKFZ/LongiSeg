@@ -25,12 +25,12 @@ from batchgenerators.dataloading.nondet_multi_threaded_augmenter import NonDetMu
 from batchgenerators.dataloading.single_threaded_augmenter import SingleThreadedAugmenter
 
 from longiseg.training.dataloading.data_loader import nnUNetDataLoader
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 import numpy as np
 
 
-class nnUNetTrainer_DASegOrd0(nnUNetTrainerLongi):
+class nnUNetTrainer_DASegOrd0(nnUNetTrainerNoLongi):
     @staticmethod
     def get_training_transforms(
             patch_size: Union[np.ndarray, Tuple[int]],

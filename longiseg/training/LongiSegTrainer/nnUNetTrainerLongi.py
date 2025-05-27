@@ -68,8 +68,6 @@ from longiseg.utilities.plans_handling.plans_handler import PlansManager
 
 
 class nnUNetTrainerNoLongi(object):
-    print("Using 'nnUNetTrainerNoLongi', which does not take temporal context into account.\n"
-          "Use 'LongiSegTrainer' instead for temporal context.")
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
                  device: torch.device = torch.device('cuda')):
 

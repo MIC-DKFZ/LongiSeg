@@ -23,10 +23,10 @@ from batchgeneratorsv2.transforms.utils.pseudo2d import Convert3DTo2DTransform, 
 from batchgeneratorsv2.transforms.utils.random import RandomTransform
 from batchgeneratorsv2.transforms.utils.remove_label import RemoveLabelTansform
 from batchgeneratorsv2.transforms.utils.seg_to_regions import ConvertSegmentationToRegionsTransform
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 
 
-class nnUNetTrainerNoMirroring(nnUNetTrainerLongi):
+class nnUNetTrainerNoMirroring(nnUNetTrainerNoLongi):
     def configure_rotation_dummyDA_mirroring_and_inital_patch_size(self):
         rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes = \
             super().configure_rotation_dummyDA_mirroring_and_inital_patch_size()
@@ -35,7 +35,7 @@ class nnUNetTrainerNoMirroring(nnUNetTrainerLongi):
         return rotation_for_DA, do_dummy_2d_data_aug, initial_patch_size, mirror_axes
 
 
-class nnUNetTrainer_onlyMirror01(nnUNetTrainerLongi):
+class nnUNetTrainer_onlyMirror01(nnUNetTrainerNoLongi):
     """
     Only mirrors along spatial axes 0 and 1 for 3D and 0 for 2D
     """

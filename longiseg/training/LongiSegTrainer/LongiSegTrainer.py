@@ -48,10 +48,10 @@ from longiseg.utilities.label_handling.label_handling import determine_num_input
 from longiseg.training.data_augmentation.custom_transforms.longi_transforms import MergeTransform, SplitTransform, \
     ConvertSegToOneHot, DownsampleSegForDSTransformLongi
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
 
 
-class LongiSegTrainer(nnUNetTrainerLongi):
+class LongiSegTrainer(nnUNetTrainerNoLongi):
     architecture_class_name = "LongiUNet"
 
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
