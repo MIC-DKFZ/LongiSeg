@@ -124,11 +124,6 @@ def compute_longi_metrics_on_folder(folder_ref: str, folder_pred: str, output_fi
     files_pred = subfiles(folder_pred, suffix=file_ending, join=False)
     files_ref = subfiles(folder_ref, suffix=file_ending, join=False)
 
-    # delete
-    files = set(files_pred).intersection(set(files_ref))
-    files_pred = [i for i in files_pred if i in files]
-    files_ref = [i for i in files_ref if i in files]
-
     if not chill:
         present = [isfile(join(folder_pred, i)) for i in files_ref]
         assert all(present), "Not all files in folder_ref exist in folder_pred"
