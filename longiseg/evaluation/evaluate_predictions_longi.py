@@ -130,6 +130,7 @@ def compute_longi_metrics_on_folder(folder_ref: str, folder_pred: str, output_fi
     # filter files with patients
     if patients_json is not None:
         patients_filtered = {k: [i for i in v if i+file_ending in files_pred] for k, v in patients_json.items()}
+        patients_filtered = {k: v for k, v in patients_filtered.items() if len(v) > 0}
         files_ref = [join(folder_ref, i + file_ending) for v in patients_json.values() for i in v if i+file_ending in files_pred]
         files_pred = [join(folder_pred, i + file_ending) for v in patients_json.values() for i in v if i+file_ending in files_pred]
     else:
