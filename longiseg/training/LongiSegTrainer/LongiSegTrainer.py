@@ -549,6 +549,8 @@ class LongiSegTrainer(nnUNetTrainerNoLongi):
         if self.enable_deep_supervision:
             output = output[0]
             target = target_current[0]
+        else:
+            target = target_current
 
         # the following is needed for online evaluation. Fake dice (green line)
         axes = [0] + list(range(2, output.ndim))
