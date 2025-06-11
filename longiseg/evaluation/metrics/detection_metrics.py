@@ -100,5 +100,5 @@ def compute_detection_metrics(mask_ref: np.ndarray, mask_pred: np.ndarray, footp
     TP_gt, TP_pred, FN, FP = get_inst_TPFPFN(gt_inst, gt_inst_num, pred_inst, pred_inst_num)
     recall = TP_gt / (TP_gt + FN) if TP_gt + FN > 0 else 1
     precision = TP_pred / (TP_pred + FP) if TP_pred + FP > 0 else 1
-    F1 = (2 * recall * precision) / (recall + precision) if recall + precision > 0 else 1
+    F1 = (2 * recall * precision) / (recall + precision) if recall + precision > 0 else 0
     return F1, recall, precision, TP_gt, TP_pred, FP, FN
