@@ -11,11 +11,13 @@ For more details on the underlying nnU-Net framework, visit the [nnU-Net reposit
 Please cite the following works when using LongiSeg in your research:  
 
 ```bibtex
-@article{rokuss2024longitudinal,
+@inproceedings{rokuss2024longitudinal,
   title={Longitudinal segmentation of MS lesions via temporal Difference Weighting},
-  author={Rokuss, Maximilian and Kirchhoff, Yannick and Roy, Saikat and Kovacs, Balint and Ulrich, Constantin and Wald, Tassilo and Zenk, Maximilian and Denner, Stefan and Isensee, Fabian and Vollmuth, Philipp and Kleesiek, Jens and Maier-Hein, Klaus},
-  journal={arXiv preprint arXiv:2409.13416},
-  year={2024}
+  author={Rokuss, Maximilian R and Kirchhoff, Yannick and Roy, Saikat and Kovacs, Balint and Ulrich, Constantin and Wald, Tassilo and Zenk, Maximilian and Denner, Stefan and Isensee, Fabian and Vollmuth, Philipp and Kleesiek, Jens and Maier-Hein, Klaus},
+  booktitle={International Conference on Medical Image Computing and Computer-Assisted Intervention},
+  pages={64--74},
+  year={2024},
+  organization={Springer}
 }
 @article{isensee2021nnu,
   title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
