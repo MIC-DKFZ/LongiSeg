@@ -60,7 +60,9 @@ class LongiSegPredictor(nnUNetPredictor):
         if trainer_class is None:
             raise RuntimeError(f'Unable to locate trainer class {trainer_name} in longiseg.training.LongiSegTrainer. '
                                f'Please place it there (in any .py file)!')
+
         self.is_longitudinal=hasattr(trainer_class, 'architecture_class_name')
+
         if self.is_longitudinal:
             network = trainer_class.build_network_architecture(
                 trainer_class.architecture_class_name,
