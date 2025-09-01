@@ -6,6 +6,8 @@ from pathlib import Path
 from warnings import warn
 
 import numpy as np
+from scipy.ndimage import gaussian_filter
+
 from batchgenerators.utilities.file_and_folder_operations import isfile, subfiles
 from longiseg.configuration import default_num_processes
 
@@ -68,3 +70,18 @@ def unpack_dataset(folder: str, unpack_segmentation: bool = True, overwrite_exis
                                        [overwrite_existing] * len(npz_files),
                                        [verify] * len(npz_files))
                   )
+
+
+def generated_sparse_to_dense_point_gauss(point: list[int], shape: tuple[int, ...], sigma: float = 1.0) -> np.ndarray:
+    gauss_blob = np.zeros(shape, dtype=np.float32)
+    gauss_blob[tuple(point)] = 1.0
+    gauss_blob = gaussian_filter(gauss_blob, sigma=sigma)
+    return gauss_blob
+
+
+def generated_sparse_to_dense_point_rescaled_gauss(point: list[int], shape: tuple[int, ...], sigma: float = 1.0) -> np.ndarray:
+    gauss_blob = np.zeros(shape, dtype=np.float32)
+    gauss_blob[tuple(point)] = 1.0
+    gauss_blob = gaussian_filter(gauss_blob, sigma=sigma)
+    gauss_blob /= gauss_blob[tuple(point)]
+    return gauss_blob

@@ -2,6 +2,12 @@
 
 <img src="documentation/assets/LongiSeg.jpg" />
 
+## AutoPET/CT IV
+
+This branch contains the code for our submission to the MICCAI 2025 [AutoPET/CT IV challenge](https://autopet-iv.grand-challenge.org/).
+
+Weights are available on [Zenodo](https://zenodo.org/records/17027189).
+
 ## What is LongiSeg?
 LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
 
