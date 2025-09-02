@@ -6,7 +6,7 @@
 
 This branch contains the code for our submission to the MICCAI 2025 [AutoPET/CT IV challenge](https://autopet-iv.grand-challenge.org/).
 
-Weights are available on [Zenodo](https://zenodo.org/records/17027189).
+Weights are available on [Zenodo](https://zenodo.org/records/17027189). In order to build the docker container for inference, you need to move the files and folder within the `_autopet` to the top level and move the pretrained weights to the `_model` folder.
 
 ## What is LongiSeg?
 LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
