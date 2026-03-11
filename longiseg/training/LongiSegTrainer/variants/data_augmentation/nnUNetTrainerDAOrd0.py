@@ -25,7 +25,7 @@ from batchgenerators.dataloading.nondet_multi_threaded_augmenter import NonDetMu
 from batchgenerators.dataloading.single_threaded_augmenter import SingleThreadedAugmenter
 
 from longiseg.training.dataloading.data_loader import nnUNetDataLoader
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 import numpy as np
 

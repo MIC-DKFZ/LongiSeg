@@ -1,6 +1,6 @@
 import torch
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 
 
 class nnUNetTrainer_250epochs_NoMirroring(nnUNetTrainerNoLongi):

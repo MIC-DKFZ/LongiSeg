@@ -2,7 +2,7 @@ import torch
 from torch.optim import Adam, AdamW
 
 from longiseg.training.lr_scheduler.polylr import PolyLRScheduler
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 
 
 class nnUNetTrainerAdam(nnUNetTrainerNoLongi):

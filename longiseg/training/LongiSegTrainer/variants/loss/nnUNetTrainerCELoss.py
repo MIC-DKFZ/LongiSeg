@@ -1,6 +1,6 @@
 import torch
 from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 from longiseg.training.loss.robust_ce_loss import RobustCrossEntropyLoss
 import numpy as np
 

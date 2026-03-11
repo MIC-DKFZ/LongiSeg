@@ -48,7 +48,7 @@ from longiseg.utilities.label_handling.label_handling import determine_num_input
 from longiseg.training.data_augmentation.custom_transforms.longi_transforms import MergeTransform, SplitTransform, \
     ConvertSegToOneHot, DownsampleSegForDSTransformLongi
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 
 
 class LongiSegTrainer(nnUNetTrainerNoLongi):

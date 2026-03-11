@@ -1,7 +1,7 @@
 import torch
 from torch.optim.lr_scheduler import CosineAnnealingLR
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 
 
 class nnUNetTrainerCosAnneal(nnUNetTrainerNoLongi):

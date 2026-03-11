@@ -1,6 +1,6 @@
 from longiseg.training.loss.compound_losses import DC_and_topk_loss
 from longiseg.training.loss.deep_supervision import DeepSupervisionWrapper
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 import numpy as np
 from longiseg.training.loss.robust_ce_loss import TopKLoss
 

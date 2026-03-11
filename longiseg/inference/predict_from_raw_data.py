@@ -893,8 +893,8 @@ def predict_entry_point():
     parser.add_argument('-p', type=str, required=False, default='nnUNetPlans',
                         help='Plans identifier. Specify the plans in which the desired configuration is located. '
                              'Default: nnUNetPlans')
-    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainer',
-                        help='What nnU-Net trainer class was used for training? Default: nnUNetTrainer')
+    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainerNoLongi',
+                        help='What nnU-Net trainer class was used for training? Default: nnUNetTrainerNoLongi')
     parser.add_argument('-c', type=str, required=True,
                         help='nnU-Net configuration that should be used for prediction. Config must be located '
                              'in the plans specified with -p')

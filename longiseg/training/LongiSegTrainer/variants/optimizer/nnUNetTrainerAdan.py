@@ -1,7 +1,7 @@
 import torch
 
 from longiseg.training.lr_scheduler.polylr import PolyLRScheduler
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 from torch.optim.lr_scheduler import CosineAnnealingLR
 try:
     from adan_pytorch import Adan

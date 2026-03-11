@@ -312,8 +312,8 @@ def accumulate_crossval_results_entry_point():
                         help='Folds to use. Default: 0 1 2 3 4')
     parser.add_argument('-p', type=str, required=False, default='nnUNetPlans',
                         help='Plan identifier in which to search for the specified configuration. Default: nnUNetPlans')
-    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainer',
-                        help='Trainer class. Default: nnUNetTrainer')
+    parser.add_argument('-tr', type=str, required=False, default='nnUNetTrainerNoLongi',
+                        help='Trainer class. Default: nnUNetTrainerNoLongi')
     args = parser.parse_args()
     trained_model_folder = get_output_folder(args.dataset_name_or_id, args.tr, args.p, args.c)
 

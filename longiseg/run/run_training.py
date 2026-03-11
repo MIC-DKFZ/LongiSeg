@@ -10,7 +10,7 @@ import torch.multiprocessing as mp
 from batchgenerators.utilities.file_and_folder_operations import join, isfile, load_json
 from longiseg.paths import LongiSeg_preprocessed
 from longiseg.run.load_pretrained_weights import load_pretrained_weights
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name
 from longiseg.utilities.find_class_by_name import recursive_find_python_class
 from torch.backends import cudnn
@@ -32,7 +32,7 @@ def find_free_network_port() -> int:
 def get_trainer_from_args(dataset_name_or_id: Union[int, str],
                           configuration: str,
                           fold: int,
-                          trainer_name: str = 'nnUNetTrainerLongi',
+                          trainer_name: str = 'nnUNetTrainerNoLongi',
                           plans_identifier: str = 'nnUNetPlans',
                           device: torch.device = torch.device('cuda')):
     # load nnunet class and do sanity checks

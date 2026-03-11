@@ -1,5 +1,5 @@
 from longiseg.training.data_augmentation.compute_initial_patch_size import get_patch_size
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 import numpy as np
 
 

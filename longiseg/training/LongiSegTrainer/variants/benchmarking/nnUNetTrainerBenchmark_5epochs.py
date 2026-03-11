@@ -3,7 +3,7 @@ import subprocess
 import torch
 from batchgenerators.utilities.file_and_folder_operations import save_json, join, isfile, load_json
 
-from longiseg.training.LongiSegTrainer.nnUNetTrainerLongi import nnUNetTrainerNoLongi
+from longiseg.training.LongiSegTrainer.nnUNetTrainerNoLongi import nnUNetTrainerNoLongi
 from torch import distributed as dist
 
 
