@@ -19,7 +19,7 @@ def empty_cache(device: torch.device):
         pass
 
 
-class dummy_context(object):
+class dummy_context:
     def __enter__(self):
         pass
 

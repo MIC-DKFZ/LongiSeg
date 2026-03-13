@@ -6,7 +6,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-class nnUNetLogger(object):
+class nnUNetLogger:
     """
     This class is really trivial. Don't expect cool functionality here. This is my makeshift solution to problems
     arising from out-of-sync epoch numbers and numbers of logged loss values. It also simplifies the trainer class a

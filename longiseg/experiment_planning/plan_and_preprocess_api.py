@@ -1,3 +1,4 @@
+import os
 import warnings
 from typing import List, Type, Optional, Tuple, Union
 
@@ -130,15 +131,16 @@ def preprocess_dataset(dataset_id: int,
 
     # copy the gt to a folder in the LongiSeg_preprocessed so that we can do validation even if the raw data is no
     # longer there (useful for compute cluster where only the preprocessed data is available)
-    from distutils.file_util import copy_file
+    import shutil
     maybe_mkdir_p(join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'))
     dataset_json = load_json(join(LongiSeg_raw, dataset_name, 'dataset.json'))
     dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
     # only copy files that are newer than the ones already present
     for k in dataset:
-        copy_file(dataset[k]['label'],
-                  join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations', k + dataset_json['file_ending']),
-                  update=True)
+        src = dataset[k]['label']
+        dst = join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations', k + dataset_json['file_ending'])
+        if not os.path.exists(dst):
+            shutil.copy2(src, dst)
 
 
 def preprocess(dataset_ids: List[int],

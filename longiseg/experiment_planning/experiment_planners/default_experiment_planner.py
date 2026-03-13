@@ -21,7 +21,7 @@ from longiseg.utilities.json_export import recursive_fix_for_json_export
 from longiseg.utilities.utils import get_filenames_of_train_images_and_targets
 
 
-class ExperimentPlanner(object):
+class ExperimentPlanner:
     def __init__(self, dataset_name_or_id: Union[str, int],
                  gpu_memory_target_in_gb: float = 8,
                  preprocessor_name: str = 'DefaultPreprocessor', plans_name: str = 'nnUNetPlans',
@@ -41,7 +41,7 @@ class ExperimentPlanner(object):
 
         # load dataset fingerprint
         if not isfile(join(preprocessed_folder, 'dataset_fingerprint.json')):
-            raise RuntimeError('Fingerprint missing for this dataset. Please run nnUNet_extract_dataset_fingerprint')
+            raise RuntimeError('Fingerprint missing for this dataset. Please run LongiSeg_extract_fingerprint')
 
         self.dataset_fingerprint = load_json(join(preprocessed_folder, 'dataset_fingerprint.json'))
 

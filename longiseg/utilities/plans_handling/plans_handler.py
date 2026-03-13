@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from longiseg.experiment_planning.experiment_planners.default_experiment_planner import ExperimentPlanner
 
 
-class ConfigurationManager(object):
+class ConfigurationManager:
     def __init__(self, configuration_dict: dict):
         self.configuration = configuration_dict
 
@@ -211,7 +211,7 @@ class ConfigurationManager(object):
         return self.configuration.get('previous_stage')
 
 
-class PlansManager(object):
+class PlansManager:
     def __init__(self, plans_file_or_dict: Union[str, dict]):
         """
         Why do we need this?

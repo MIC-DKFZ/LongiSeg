@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from longiseg.utilities.plans_handling.plans_handler import PlansManager, ConfigurationManager
 
 
-class LabelManager(object):
+class LabelManager:
     def __init__(self, label_dict: dict, regions_class_order: Union[List[int], None], force_use_labels: bool = False,
                  inference_nonlin=None):
         self._sanity_check(label_dict)

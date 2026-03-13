@@ -4,7 +4,6 @@ from typing import Union, Tuple, List
 
 import numpy as np
 import pandas as pd
-import sklearn
 import torch
 from batchgenerators.augmentations.utils import resize_segmentation
 from scipy.ndimage import map_coordinates

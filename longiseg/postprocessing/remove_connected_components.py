@@ -57,7 +57,7 @@ def determine_postprocessing(folder_predictions: str,
                              num_processes: int = default_num_processes,
                              keep_postprocessed_files: bool = True):
     """
-    Determines nnUNet postprocessing. Its output is a postprocessing.pkl file in folder_predictions which can be
+    Determines postprocessing. Its output is a postprocessing.pkl file in folder_predictions which can be
     used with apply_postprocessing_to_folder.
 
     Postprocessed files are saved in folder_predictions/postprocessed. Set
@@ -72,7 +72,7 @@ def determine_postprocessing(folder_predictions: str,
         expected_plans_file = join(folder_predictions, 'plans.json')
         if not isfile(expected_plans_file):
             raise RuntimeError(f"Expected plans file missing: {expected_plans_file}. The plans files should have been "
-                               f"created while running nnUNetv2_predict. Sadge.")
+                               f"created while running LongiSeg_predict. Sadge.")
         plans_file_or_dict = load_json(expected_plans_file)
     plans_manager = PlansManager(plans_file_or_dict)
 
@@ -81,7 +81,7 @@ def determine_postprocessing(folder_predictions: str,
         if not isfile(expected_dataset_json_file):
             raise RuntimeError(
                 f"Expected plans file missing: {expected_dataset_json_file}. The plans files should have been "
-                f"created while running nnUNetv2_predict. Sadge.")
+                f"created while running LongiSeg_predict. Sadge.")
         dataset_json_file_or_dict = load_json(expected_dataset_json_file)
 
     if not isinstance(dataset_json_file_or_dict, dict):

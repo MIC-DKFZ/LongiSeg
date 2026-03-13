@@ -79,7 +79,7 @@ class SimpleITKIO(BaseReaderWriter):
             print(origins)
             print('Image files:')
             print(image_fnames)
-            print('It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+            print('It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                   'that segmentations and data overlap.')
         if not self._check_all_same(directions):
             print('WARNING! Not all input images have the same direction!')
@@ -87,7 +87,7 @@ class SimpleITKIO(BaseReaderWriter):
             print(directions)
             print('Image files:')
             print(image_fnames)
-            print('It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+            print('It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                   'that segmentations and data overlap.')
         if not self._check_all_same(spacings_for_nnunet):
             print('ERROR! Not all input images have the same spacing_for_nnunet! (This should not happen and must be a '
@@ -186,7 +186,7 @@ class SimpleITKIOWithReorient(SimpleITKIO):
             print(origins)
             print('Image files:')
             print(image_fnames)
-            print('It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+            print('It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                   'that segmentations and data overlap.')
         if not self._check_all_same(directions):
             print('WARNING! Not all input images have the same direction!')
@@ -194,7 +194,7 @@ class SimpleITKIOWithReorient(SimpleITKIO):
             print(directions)
             print('Image files:')
             print(image_fnames)
-            print('It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+            print('It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                   'that segmentations and data overlap.')
         if not self._check_all_same(spacings_for_nnunet):
             print('ERROR! Not all input images have the same spacing_for_nnunet! (This should not happen and must be a '

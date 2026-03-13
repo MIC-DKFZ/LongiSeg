@@ -67,7 +67,7 @@ from longiseg.utilities.label_handling.label_handling import convert_labelmap_to
 from longiseg.utilities.plans_handling.plans_handler import PlansManager
 
 
-class nnUNetTrainerNoLongi(object):
+class nnUNetTrainerNoLongi:
     def __init__(self, plans: dict, configuration: str, fold: int, dataset_json: dict,
                  device: torch.device = torch.device('cuda')):
 

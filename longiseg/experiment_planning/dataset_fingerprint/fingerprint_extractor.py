@@ -15,7 +15,7 @@ from longiseg.utilities.dataset_name_id_conversion import maybe_convert_to_datas
 from longiseg.utilities.utils import get_filenames_of_train_images_and_targets
 
 
-class DatasetFingerprintExtractor(object):
+class DatasetFingerprintExtractor:
     def __init__(self, dataset_name_or_id: Union[str, int], num_processes: int = 8, verbose: bool = False):
         """
         extracts the dataset fingerprint used for experiment planning. The dataset fingerprint will be saved as a

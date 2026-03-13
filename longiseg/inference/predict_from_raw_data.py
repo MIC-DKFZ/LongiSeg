@@ -36,7 +36,7 @@ from longiseg.utilities.plans_handling.plans_handler import PlansManager, Config
 from longiseg.utilities.utils import create_lists_from_splitted_dataset_folder
 
 
-class nnUNetPredictor(object):
+class nnUNetPredictor:
     def __init__(self,
                  tile_step_size: float = 0.5,
                  use_gaussian: bool = True,

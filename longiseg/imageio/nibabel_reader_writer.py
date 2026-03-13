@@ -28,7 +28,7 @@ class NibabelIO(BaseReaderWriter):
     Nibabel loads the images in a different order than sitk. We convert the axes to the sitk order to be
     consistent. This is of course considered properly in segmentation export as well.
 
-    IMPORTANT: Run nnUNetv2_plot_overlay_pngs to verify that this did not destroy the alignment of data and seg!
+    IMPORTANT: Run LongiSeg_plot_overlay_pngs to verify that this did not destroy the alignment of data and seg!
     """
     supported_file_endings = [
         '.nii',
@@ -69,7 +69,7 @@ class NibabelIO(BaseReaderWriter):
             print('Image files:')
             print(image_fnames)
             print(
-                'It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+                'It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                 'that segmentations and data overlap.')
         if not self._check_all_same(spacings_for_nnunet):
             print('ERROR! Not all input images have the same spacing_for_nnunet! This might be caused by them not '
@@ -105,7 +105,7 @@ class NibabelIOWithReorient(BaseReaderWriter):
     Nibabel loads the images in a different order than sitk. We convert the axes to the sitk order to be
     consistent. This is of course considered properly in segmentation export as well.
 
-    IMPORTANT: Run nnUNetv2_plot_overlay_pngs to verify that this did not destroy the alignment of data and seg!
+    IMPORTANT: Run LongiSeg_plot_overlay_pngs to verify that this did not destroy the alignment of data and seg!
     """
     supported_file_endings = [
         '.nii',
@@ -150,7 +150,7 @@ class NibabelIOWithReorient(BaseReaderWriter):
             print('Image files:')
             print(image_fnames)
             print(
-                'It is up to you to decide whether that\'s a problem. You should run nnUNetv2_plot_overlay_pngs to verify '
+                'It is up to you to decide whether that\'s a problem. You should run LongiSeg_plot_overlay_pngs to verify '
                 'that segmentations and data overlap.')
         if not self._check_all_same(spacings_for_nnunet):
             print('ERROR! Not all input images have the same spacing_for_nnunet! This might be caused by them not '

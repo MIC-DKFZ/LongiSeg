@@ -36,7 +36,7 @@ from longiseg.utilities.plans_handling.plans_handler import PlansManager, Config
 from longiseg.utilities.utils import get_filenames_of_train_images_and_targets
 
 
-class DefaultPreprocessor(object):
+class DefaultPreprocessor:
     def __init__(self, verbose: bool = True):
         self.verbose = verbose
         """
@@ -250,7 +250,7 @@ class DefaultPreprocessor(object):
         assert isdir(join(LongiSeg_raw, dataset_name)), "The requested dataset could not be found in LongiSeg_raw"
 
         plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
-        assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding nnUNet_plan_experiment " \
+        assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding LongiSeg_plan_experiment " \
                                    "first." % plans_file
         plans = load_json(plans_file)
         plans_manager = PlansManager(plans)

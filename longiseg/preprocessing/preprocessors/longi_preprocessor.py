@@ -256,7 +256,7 @@ class LongiSegPreprocessor(DefaultPreprocessor):
         assert isdir(join(LongiSeg_raw, dataset_name)), "The requested dataset could not be found in LongiSeg_raw"
 
         plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
-        assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding nnUNet_plan_experiment " \
+        assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding LongiSeg_plan_experiment " \
                                    "first." % plans_file
         plans = load_json(plans_file)
         plans_manager = PlansManager(plans)
