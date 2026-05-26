@@ -2,6 +2,23 @@
 
 <img src="documentation/assets/LongiSeg.jpg" />
 
+## News: LongiSeg 2.0 for verified lesion tracking
+
+Our new work on longitudinal lesion tracking was early accepted at **MICCAI 2026** (top 9%). The method also won **1st place in the MICCAI autoPET IV challenge**.
+
+LongiSeg 2.0 introduces **Verified Tracking**, a clinically safe paradigm for lesion follow-up. Instead of silently accepting fully automatic tracking results, the workflow separates lesion retrieval and delineation:
+
+1. A registration-based method proposes the corresponding lesion location in the follow-up scan.
+2. A clinician verifies or corrects the proposed point prompt.
+3. LongiSeg segments the lesion using the verified prompt and the baseline lesion appearance as longitudinal context.
+
+The model combines **early prompt fusion**, **latent temporal difference weighting**, and **large-scale synthetic longitudinal pretraining**. This allows LongiSeg 2.0 to use both the current scan and prior lesion appearance when segmenting lesions across timepoints. It sets a new state of the art in lesion tracking and even its automatic tracking outperforms the verified tracking results of competing methods.
+
+We also release **PanTrack**, the first public longitudinal benchmark for pancreatic cancer lesion tracking. It contains **45 patients** and **161 CT scans** with temporally matched annotations of pancreatic tumors and selected liver metastases.
+
+Paper: [![arXiv](https://img.shields.io/badge/arXiv-2605.23118-B31B1B.svg)](https://arxiv.org/abs/2605.23118) \
+Dataset: [![Hugging Face Dataset](https://img.shields.io/badge/🤗%20Hugging%20Face-PanTrack-yellow.svg)](https://huggingface.co/datasets/mrokuss/PanTrack)
+
 ## What is LongiSeg?
 LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
 
@@ -11,6 +28,12 @@ For more details on the underlying nnU-Net framework, visit the [nnU-Net reposit
 Please cite the following works when using LongiSeg in your research:  
 
 ```bibtex
+@article{kirchhoff2026exploiting,
+  title={Exploiting Longitudinal Context in Clinician-Verified Interactive Lesion Tracking},
+  author={Kirchhoff, Yannick and Rokuss, Maximilian and Mertens, Daniel Philipp and F{\"u}ller, David and Hamm, Benjamin and Schreyer, Andreas and Ritter, Oliver and Maier-Hein, Klaus},
+  journal={arXiv preprint arXiv:2605.23118},
+  year={2026}
+}
 @inproceedings{rokuss2024longitudinal,
   title={Longitudinal segmentation of MS lesions via temporal Difference Weighting},
   author={Rokuss, Maximilian R and Kirchhoff, Yannick and Roy, Saikat and Kovacs, Balint and Ulrich, Constantin and Wald, Tassilo and Zenk, Maximilian and Denner, Stefan and Isensee, Fabian and Vollmuth, Philipp and Kleesiek, Jens and Maier-Hein, Klaus},
