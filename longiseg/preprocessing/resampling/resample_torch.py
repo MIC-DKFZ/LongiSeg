@@ -49,6 +49,7 @@ def resample_torch_simple(
                 data = data.to(device)
 
             if is_seg:
+                data = data.to(torch.int8) if data.max() < 127 else data.to(torch.int16)
                 unique_values = torch.unique(data)
                 result_dtype = torch.int8 if max(unique_values) < 127 else torch.int16
                 result = torch.zeros((data.shape[0], *new_shape), dtype=result_dtype, device=device)

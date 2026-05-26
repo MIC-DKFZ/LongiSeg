@@ -118,6 +118,7 @@ def preprocess_dataset(dataset_id: int,
     print(f'Preprocessing dataset {dataset_name}')
     plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
     plans_manager = PlansManager(plans_file)
+    maybe_mkdir_p(join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'))
     for n, c in zip(num_processes, configurations):
         print(f'Configuration: {c}...')
         if c not in plans_manager.available_configurations:
@@ -132,7 +133,6 @@ def preprocess_dataset(dataset_id: int,
     # copy the gt to a folder in the LongiSeg_preprocessed so that we can do validation even if the raw data is no
     # longer there (useful for compute cluster where only the preprocessed data is available)
     import shutil
-    maybe_mkdir_p(join(LongiSeg_preprocessed, dataset_name, 'gt_segmentations'))
     dataset_json = load_json(join(LongiSeg_raw, dataset_name, 'dataset.json'))
     dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
     # only copy files that are newer than the ones already present
