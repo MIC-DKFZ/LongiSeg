@@ -54,7 +54,7 @@ dependencies = [
     "batchgeneratorsv2>=0.2",
     "einops",
     "blosc2>=3.0.0b1",
-    "difference-weighting @ git+https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting.git"
+    "difference-weighting @ git+https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting.git@v0.2.0"
 ]
 
 [project.urls]
