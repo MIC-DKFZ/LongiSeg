@@ -88,12 +88,8 @@ class DatasetFingerprintExtractorLongiSeg(DatasetFingerprintExtractor):
 
             r = []
             with multiprocessing.get_context("spawn").Pool(self.num_processes) as p:
-                # for k in self.dataset.keys():
-                #     r.append(p.starmap_async(DatasetFingerprintExtractorLongiSeg.analyze_case,
-                #                              ((self.dataset[k]['images'], self.dataset[k]['label'], reader_writer_class,
-                #                                num_foreground_samples_per_case),)))
                 for patient, patient_scans in self.patients.items():
-                    r.append(p.starmap_async(DatasetFingerprintExtractorLongiSeg.analyze_patient,
+                    r.append(p.starmap_async(type(self).analyze_patient,
                                              ((self.dataset, patient, patient_scans, reader_writer_class,
                                                num_foreground_samples_per_case, preprocessed_output_folder),)))
 
@@ -118,10 +114,6 @@ class DatasetFingerprintExtractorLongiSeg(DatasetFingerprintExtractor):
                         remaining = [i for i in remaining if i not in done]
                         sleep(0.1)
 
-            # results = ptqdm(DatasetFingerprintExtractorLongiSeg.analyze_case,
-            #                 (training_images_per_case, training_labels_per_case),
-            #                 processes=self.num_processes, zipped=True, reader_writer_class=reader_writer_class,
-            #                 num_samples=num_foreground_samples_per_case, disable=self.verbose)
             results = [i.get()[0] for i in r]
 
             shapes_after_crop = [e for r in results for e in r[0]]

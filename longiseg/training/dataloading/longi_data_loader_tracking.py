@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List
+from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 import torch
@@ -32,6 +32,51 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
     def gauss_blob_func(*args, **kwargs):
         return generated_sparse_to_dense_point_rescaled_gauss(*args, **kwargs)
 
+    @staticmethod
+    def _sample_point_in_lesion(class_locations: dict, lesion: int) -> np.ndarray:
+        coords = class_locations[lesion]['coords']
+        edt_values = class_locations[lesion]['edt_values']
+        idx = np.random.choice(len(coords), p=edt_values ** 2 / np.sum(edt_values ** 2))
+        return coords[idx][1:]
+
+    def select_prompts(self, properties_fu: dict, properties_bl: dict, key: str) -> Tuple[List[int], List[int],
+                                                                                          Sequence[int], Sequence[int]]:
+        all_fu_lesions = properties_fu['all_fu_lesions']
+        fu_point_prop = properties_fu['fu_point_prop']
+        no_proposal = np.isnan(fu_point_prop).all()
+
+        if all_fu_lesions[0] == 0:
+            fu_point = fu_point_prop
+        elif no_proposal:
+            fu_point = properties_fu['fu_point']
+        elif np.isnan(properties_fu['fu_point']).all():
+            fu_point = fu_point_prop
+        elif np.random.rand() < 0.5:
+            fu_point = fu_point_prop
+        else:
+            for fu_lesion in all_fu_lesions:
+                if fu_lesion in properties_fu['class_locations']:
+                    fu_point = self._sample_point_in_lesion(properties_fu['class_locations'], fu_lesion)
+                    break
+            else:
+                fu_point = fu_point_prop
+
+        bl_lesion = properties_bl['bl_lesion']
+        if not no_proposal and bl_lesion in properties_bl['class_locations']:
+            bl_point = self._sample_point_in_lesion(properties_bl['class_locations'], bl_lesion)
+        else:
+            bl_point = properties_bl['bl_point']
+
+        fu_labels = all_fu_lesions if all_fu_lesions[0] != 0 else []
+        bl_labels = [bl_lesion] if bl_lesion != 0 else []
+        return [int(p) for p in fu_point], [int(p) for p in bl_point], fu_labels, bl_labels
+
+    @staticmethod
+    def _binarize_seg(seg: np.ndarray, labels: Sequence[int]) -> np.ndarray:
+        if len(labels) == 0:
+            return np.where(seg < 0, -1, 0)
+        return np.select([np.isin(seg, labels), seg < 0], [1, -1], default=0)
+
     def get_bbox(self, fu_shape: np.ndarray, fu_point: List[float], bl_shape: np.ndarray, bl_point: List[float], verbose: bool = False):
         # in dataloader 2d we need to select the slice prior to this and also modify the class_locations to only have
         # locations for the given slice
@@ -53,9 +98,9 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
         ubs_fu = [fu_shape[i] + need_to_pad_fu[i] // 2 + need_to_pad_fu[i] % 2 for i in range(dim)]
 
         center = np.random.randint(
-            [max(lbs_fu[i] + self.patch_size[i] // 2, min(fu_point[i] - self.final_patch_size[i] // 4, 
+            [max(lbs_fu[i] + self.patch_size[i] // 2, min(fu_point[i] - self.final_patch_size[i] // 4,
                                                             ubs_fu[i] - self.patch_size[i] // 2)) for i in range(dim)],
-            [min(ubs_fu[i] + 1 - self.patch_size[i] // 2, max(fu_point[i] + 1 + self.final_patch_size[i] // 4, 
+            [min(ubs_fu[i] + 1 - self.patch_size[i] // 2, max(fu_point[i] + 1 + self.final_patch_size[i] // 4,
                                                             lbs_fu[i] + 1 + self.patch_size[i] // 2)) for i in range(dim)]
         ).tolist()
 
@@ -82,39 +127,7 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
         for j, i in enumerate(selected_keys):
             fu_data, fu_seg, bl_data, bl_seg, _, properties_fu, properties_bl = self._data.load_case(i)
 
-            all_fu_lesions = properties_fu['all_fu_lesions']
-            if all_fu_lesions[0] == 0:
-                fu_point = properties_fu['fu_point_prop']
-            elif np.isnan(properties_fu['fu_point_prop']).all():
-                fu_point = properties_fu['fu_point']
-            elif np.isnan(properties_fu['fu_point']).all():
-                fu_point = properties_fu['fu_point_prop']
-            elif np.random.rand() < 0.5:
-                fu_point = properties_fu['fu_point_prop']
-            else:
-                for fu_lesion in all_fu_lesions:
-                    if fu_lesion in properties_fu['class_locations']:
-                        fu_coords = properties_fu['class_locations'][fu_lesion]['coords']
-                        fu_edt = properties_fu['class_locations'][fu_lesion]['edt_values']
-                        fu_idx = np.random.choice(len(fu_coords), p=fu_edt**2 / np.sum(fu_edt**2))
-                        fu_point = fu_coords[fu_idx][1:]
-                        break
-                else:
-                    fu_point = properties_fu['fu_point_prop']
-
-            bl_lesion = properties_bl['bl_lesion']
-            if np.isnan(properties_fu['fu_point_prop']).all():
-                bl_point = properties_bl['bl_point']
-            elif bl_lesion in properties_bl['class_locations']:
-                bl_coords = properties_bl['class_locations'][bl_lesion]['coords']
-                bl_edt = properties_bl['class_locations'][bl_lesion]['edt_values']
-                bl_idx = np.random.choice(len(bl_coords), p=bl_edt**2 / np.sum(bl_edt**2))
-                bl_point = bl_coords[bl_idx][1:]
-            else:
-                bl_point = properties_bl['bl_point']
-
-            fu_point = [int(p) for p in fu_point]
-            bl_point = [int(p) for p in bl_point]
+            fu_point, bl_point, fu_labels, bl_labels = self.select_prompts(properties_fu, properties_bl, i)
 
             # If we are doing the cascade then the segmentation from the previous stage will already have been loaded by
             # self._data.load_case(i) (see nnUNetDataset.load_case)
@@ -145,15 +158,8 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
             fu_gauss_point = self.gauss_blob_func(fu_point, shape=fu_data.shape[1:], sigma=self.sigma)
             bl_gauss_point = self.gauss_blob_func(bl_point, shape=bl_data.shape[1:], sigma=self.sigma)
 
-            if all_fu_lesions[0] == 0:
-                fu_seg = np.where(fu_seg < 0, -1, 0)
-            else:
-                fu_seg = np.select([np.isin(fu_seg, all_fu_lesions), fu_seg < 0],
-                                   [1, -1], default=0)
-            if bl_lesion == 0:
-                bl_seg = np.where(bl_seg < 0, -1, 0)
-            else:
-                bl_seg = np.select([bl_seg == bl_lesion, bl_seg < 0], [1, -1], default=0)
+            fu_seg = self._binarize_seg(fu_seg, fu_labels)
+            bl_seg = self._binarize_seg(bl_seg, bl_labels)
 
             fu_padding = [(-min(0, fu_bbox_lbs[i]), max(fu_bbox_ubs[i] - fu_shape[i], 0)) for i in range(dim)]
             fu_padding = ((0, 0), *fu_padding)
@@ -204,9 +210,6 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
                     fu_gauss_point_all = torch.stack(gauss_current)
                     bl_gauss_point_all = torch.stack(gauss_prior)
                     del gauss_current, segs_current, images_current, gauss_prior, segs_prior, images_prior
-            return {'data_current': fu_data_all, 'target_current': fu_seg_all, "gauss_current": fu_gauss_point_all,
-                    'data_prior': bl_data_all, 'target_prior': bl_seg_all, "gauss_prior": bl_gauss_point_all,
-                    'keys': selected_keys}
 
         return {'data_current': fu_data_all, 'target_current': fu_seg_all, "gauss_current": fu_gauss_point_all,
                 'data_prior': bl_data_all, 'target_prior': bl_seg_all, "gauss_prior": bl_gauss_point_all,
@@ -214,129 +217,22 @@ class LongiSegDataLoaderTracking(LongiSegDataLoader):
 
 
 class LongiSegDataLoaderTrackingPretrain(LongiSegDataLoaderTracking):
-    def generate_train_batch(self):
-        selected_keys = self.get_indices()
-        # preallocate memory for data and seg
-        fu_data_all = np.zeros(self.data_shape, dtype=np.float32)
-        fu_seg_all = np.zeros(self.seg_shape, dtype=np.int16)
-        fu_gauss_point_all = np.zeros((self.batch_size, 1, *self.patch_size), dtype=np.float32)
-        bl_data_all = np.zeros(self.data_shape, dtype=np.float32)
-        bl_seg_all = np.zeros(self.seg_shape, dtype=np.int16)
-        bl_gauss_point_all = np.zeros((self.batch_size, 1, *self.patch_size), dtype=np.float32)
+    def select_prompts(self, properties_fu: dict, properties_bl: dict, key: str):
+        fu_lesions = list(properties_fu['class_locations'].keys())
+        bl_lesions = list(properties_bl['class_locations'].keys())
+        shared_lesions = list(set(fu_lesions) & set(bl_lesions))
 
-        for j, i in enumerate(selected_keys):
-            fu_data, fu_seg, bl_data, bl_seg, _, properties_fu, properties_bl = self._data.load_case(i)
+        lesion = None
+        while len(shared_lesions) > 0:
+            lesion = np.random.choice(shared_lesions)
+            if properties_fu['class_locations'][lesion]['coords'].size > 0 and \
+                    properties_bl['class_locations'][lesion]['coords'].size > 0:
+                break
+            shared_lesions.remove(lesion)
+        if len(shared_lesions) == 0:
+            raise RuntimeError(f"Patient {key} has no lesions with coordinates in both follow-up and "
+                               f"baseline data.")
 
-            fu_lesions = list(properties_fu['class_locations'].keys())
-            bl_lesions = list(properties_bl['class_locations'].keys())
-            all_lesions = list(set(fu_lesions) & set(bl_lesions))
-
-            while len(all_lesions) > 0:
-                lesion = np.random.choice(all_lesions)
-                if properties_fu['class_locations'][lesion]['coords'].size > 0 and properties_bl['class_locations'][lesion]['coords'].size > 0:
-                    break
-                all_lesions.remove(lesion)
-            if len(all_lesions) == 0:
-                raise RuntimeError(f"Patient {i} has no lesions with coordinates in both follow-up and baseline data.")
-
-            fu_coords = properties_fu['class_locations'][lesion]['coords']
-            fu_edt = properties_fu['class_locations'][lesion]['edt_values']
-            fu_idx = np.random.choice(len(fu_coords), p=fu_edt**2 / np.sum(fu_edt**2))
-            fu_point = fu_coords[fu_idx][1:]
-
-            bl_coords = properties_bl['class_locations'][lesion]['coords']
-            bl_edt = properties_bl['class_locations'][lesion]['edt_values']
-            bl_idx = np.random.choice(len(bl_coords), p=bl_edt**2 / np.sum(bl_edt**2))
-            bl_point = bl_coords[bl_idx][1:]
-
-            fu_point = [int(p) for p in fu_point]
-            bl_point = [int(p) for p in bl_point]
-
-            # If we are doing the cascade then the segmentation from the previous stage will already have been loaded by
-            # self._data.load_case(i) (see nnUNetDataset.load_case)
-            fu_shape = fu_data.shape[1:]
-            bl_shape = bl_data.shape[1:]
-            dim = len(fu_shape)
-
-            fu_bbox_lbs, fu_bbox_ubs, bl_bbox_lbs, bl_bbox_ubs = self.get_bbox(fu_shape, fu_point, bl_shape, bl_point)
-
-            valid_fu_bbox_lbs = np.clip(fu_bbox_lbs, a_min=0, a_max=None)
-            valid_fu_bbox_ubs = np.minimum(fu_shape, fu_bbox_ubs)
-            valid_bl_bbox_lbs = np.clip(bl_bbox_lbs, a_min=0, a_max=None)
-            valid_bl_bbox_ubs = np.minimum(bl_shape, bl_bbox_ubs)
-
-            fu_slice_data = tuple([slice(0, fu_data.shape[0])] + [slice(i, j) for i, j in zip(valid_fu_bbox_lbs, valid_fu_bbox_ubs)])
-            fu_slice_seg = tuple([slice(0, fu_seg.shape[0])] + [slice(i, j) for i, j in zip(valid_fu_bbox_lbs, valid_fu_bbox_ubs)])
-            bl_slice_data = tuple([slice(0, bl_data.shape[0])] + [slice(i, j) for i, j in zip(valid_bl_bbox_lbs, valid_bl_bbox_ubs)])
-            bl_slice_seg = tuple([slice(0, bl_seg.shape[0])] + [slice(i, j) for i, j in zip(valid_bl_bbox_lbs, valid_bl_bbox_ubs)])
-
-            fu_data = fu_data[fu_slice_data]
-            fu_seg = fu_seg[fu_slice_seg]
-            bl_data = bl_data[bl_slice_data]
-            bl_seg = bl_seg[bl_slice_seg]
-
-            fu_point = [fu_point[i] - valid_fu_bbox_lbs[i] for i in range(dim)]
-            bl_point = [bl_point[i] - valid_bl_bbox_lbs[i] for i in range(dim)]
-
-            fu_gauss_point = self.gauss_blob_func(fu_point, shape=fu_data.shape[1:], sigma=self.sigma)
-            bl_gauss_point = self.gauss_blob_func(bl_point, shape=bl_data.shape[1:], sigma=self.sigma)
-
-            fu_seg = np.select([fu_seg == int(lesion), fu_seg < 0], [1, -1], default=0)
-            bl_seg = np.select([bl_seg == int(lesion), bl_seg < 0], [1, -1], default=0)
-
-            fu_padding = [(-min(0, fu_bbox_lbs[i]), max(fu_bbox_ubs[i] - fu_shape[i], 0)) for i in range(dim)]
-            fu_padding = ((0, 0), *fu_padding)
-            bl_padding = [(-min(0, bl_bbox_lbs[i]), max(bl_bbox_ubs[i] - bl_shape[i], 0)) for i in range(dim)]
-            bl_padding = ((0, 0), *bl_padding)
-
-            fu_data_all[j] = np.pad(fu_data, fu_padding, 'constant', constant_values=0)
-            fu_seg_all[j] = np.pad(fu_seg, fu_padding, 'constant', constant_values=-1)
-            fu_gauss_point_all[j] = np.pad(fu_gauss_point[None], fu_padding, 'constant', constant_values=0)
-            bl_data_all[j] = np.pad(bl_data, bl_padding, 'constant', constant_values=0)
-            bl_seg_all[j] = np.pad(bl_seg, bl_padding, 'constant', constant_values=-1)
-            bl_gauss_point_all[j] = np.pad(bl_gauss_point[None], bl_padding, 'constant', constant_values=0)
-
-        if self.transforms is not None:
-            with torch.no_grad():
-                with threadpool_limits(limits=1, user_api=None):
-                    fu_data_all = torch.from_numpy(fu_data_all).float()
-                    fu_seg_all = torch.from_numpy(fu_seg_all).to(torch.int16)
-                    fu_gauss_point_all = torch.from_numpy(fu_gauss_point_all).float()
-                    bl_data_all = torch.from_numpy(bl_data_all).float()
-                    bl_seg_all = torch.from_numpy(bl_seg_all).to(torch.int16)
-                    bl_gauss_point_all = torch.from_numpy(bl_gauss_point_all).float()
-                    images_current = []
-                    segs_current = []
-                    gauss_current = []
-                    images_prior = []
-                    segs_prior = []
-                    gauss_prior = []
-                    for b in range(self.batch_size):
-                        tmp = self.transforms(**{'image_current': fu_data_all[b], 'segmentation_current': fu_seg_all[b], "gauss_current": fu_gauss_point_all[b],
-                                                 'image_prior': bl_data_all[b], 'segmentation_prior': bl_seg_all[b], "gauss_prior": bl_gauss_point_all[b]})
-                        images_current.append(tmp['image_current'])
-                        segs_current.append(tmp['segmentation_current'])
-                        gauss_current.append(tmp['gauss_current'])
-                        images_prior.append(tmp['image_prior'])
-                        segs_prior.append(tmp['segmentation_prior'])
-                        gauss_prior.append(tmp['gauss_prior'])
-                    fu_data_all = torch.stack(images_current)
-                    bl_data_all = torch.stack(images_prior)
-                    if isinstance(segs_current[0], list):
-                        fu_seg_all = [torch.stack([s[i] for s in segs_current]) for i in range(len(segs_current[0]))]
-                    else:
-                        fu_seg_all = torch.stack(segs_current)
-                    if isinstance(segs_prior[0], list):
-                        bl_seg_all = [torch.stack([s[i] for s in segs_prior]) for i in range(len(segs_prior[0]))]
-                    else:
-                        bl_seg_all = torch.stack(segs_prior)
-                    fu_gauss_point_all = torch.stack(gauss_current)
-                    bl_gauss_point_all = torch.stack(gauss_prior)
-                    del gauss_current, segs_current, images_current, gauss_prior, segs_prior, images_prior
-            return {'data_current': fu_data_all, 'target_current': fu_seg_all, "gauss_current": fu_gauss_point_all,
-                    'data_prior': bl_data_all, 'target_prior': bl_seg_all, "gauss_prior": bl_gauss_point_all,
-                    'keys': selected_keys}
-
-        return {'data_current': fu_data_all, 'target_current': fu_seg_all, "gauss_current": fu_gauss_point_all,
-                'data_prior': bl_data_all, 'target_prior': bl_seg_all, "gauss_prior": bl_gauss_point_all,
-                'keys': selected_keys}
+        fu_point = self._sample_point_in_lesion(properties_fu['class_locations'], lesion)
+        bl_point = self._sample_point_in_lesion(properties_bl['class_locations'], lesion)
+        return [int(p) for p in fu_point], [int(p) for p in bl_point], [int(lesion)], [int(lesion)]

@@ -196,7 +196,7 @@ class LongiSegTrainerPrimed(LongiSegTrainer):
             results = []
 
             for i, p in enumerate(dataset_val.patients):
-                for j, (k_c, k_p) in enumerate(zip(dataset_val.patients[p], dataset_val.patients[p][:1] + dataset_val.patients[p][:-1])):
+                for k_c, k_p in zip(dataset_val.patients[p], dataset_val.patients[p][:1] + dataset_val.patients[p][:-1]):
                     proceed = not check_workers_alive_and_busy(segmentation_export_pool, worker_list, results,
                                                             allowed_num_queued=2)
                     while not proceed:
@@ -207,7 +207,7 @@ class LongiSegTrainerPrimed(LongiSegTrainer):
                     self.print_to_log_file(f"predicting {k_c}")
                     data_current, _, _, properties = dataset_val.load_single_scan(k_c)
                     data_prior, seg_prior, _, _ = dataset_val.load_single_scan(k_p)
-    
+
                     data_current = data_current[:]
                     data_prior = data_prior[:]
 
@@ -238,9 +238,6 @@ class LongiSegTrainerPrimed(LongiSegTrainer):
                             )
                         )
                     )
-                    # for debug purposes
-                    # export_prediction_from_logits(prediction, properties, self.configuration_manager, self.plans_manager,
-                    #      self.dataset_json, output_filename_truncated, save_probabilities)
 
                 # if we don't barrier from time to time we will get nccl timeouts for large datasets. Yuck.
                 if self.is_ddp and i < last_barrier_at_idx and (i + 1) % 4 == 0:

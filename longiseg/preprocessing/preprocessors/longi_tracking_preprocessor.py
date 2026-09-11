@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Sequence, Union
 
 import multiprocessing
 import shutil
@@ -45,7 +45,6 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
         properties['shape_before_cropping'] = shape_before_cropping
         # this command will generate a segmentation. This is important because of the nonzero mask which we may need
         properties['bbox_used_for_cropping'] = [[None, None] for _ in range(len(shape_before_cropping))]
-        # print(data.shape, seg.shape)
         properties['shape_after_cropping_and_before_resampling'] = data.shape[1:]
 
         # resample
@@ -63,8 +62,6 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
         data = self._normalize(data, seg, configuration_manager,
                                plans_manager.foreground_intensity_properties_per_channel)
 
-        # print('current shape', data.shape[1:], 'current_spacing', original_spacing,
-        #       '\ntarget shape', new_shape, 'target_spacing', target_spacing)
         old_shape = data.shape[1:]
         data = configuration_manager.resampling_fn_data(data, new_shape, original_spacing, target_spacing)
         seg = configuration_manager.resampling_fn_seg(seg, new_shape, original_spacing, target_spacing)
@@ -87,8 +84,8 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
         """
         seg file can be none (test cases)
 
-        order of operations is: transpose -> crop -> resample
-        so when we export we need to run the following order: resample -> crop -> transpose (we could also run
+        order of operations is: transpose -> resample
+        so when we export we need to run the following order: resample -> transpose (we could also run
         transpose at a different place, but reverting the order of operations done during preprocessing seems cleaner)
         """
         if isinstance(dataset_json, str):
@@ -132,6 +129,36 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
 
         return properties
 
+    @staticmethod
+    def _resample_point(point: Sequence[float], original_spacing: Sequence[float], target_spacing: Sequence[float],
+                        transpose_forward: Sequence[int]) -> Sequence[float]:
+        # bl_point and fu_point are given as coordinates in the original image space.
+        # We need to convert them to the new space.
+        if np.isnan(point).any():
+            return point
+        point = point[::-1]
+        point = [point[i] for i in transpose_forward]
+        return [p * original_spacing[i] / target_spacing[i] for i, p in enumerate(point)]
+
+    def _resample_tracking(self, scan_dict: dict, patient_spacings: dict, plans_manager: PlansManager,
+                           target_spacing: Sequence[float]) -> dict:
+        resampled = {}
+        for lesion, info in scan_dict.items():
+            bl_spacing = patient_spacings[info['img_bl']]
+            fu_spacing = patient_spacings[info['img_fu']]
+            resampled[lesion] = {
+                'bl_point': self._resample_point(info['bl_point'], bl_spacing, target_spacing,
+                                                 plans_manager.transpose_forward),
+                'fu_point_prop': self._resample_point(info['fu_point_prop'], fu_spacing, target_spacing,
+                                                      plans_manager.transpose_forward),
+                'fu_point': self._resample_point(info['fu_point'], fu_spacing, target_spacing,
+                                                 plans_manager.transpose_forward),
+                'img_bl': info['img_bl'],
+                'img_fu': info['img_fu'],
+                'merged_lesions': info['merged_lesions'],
+            }
+        return resampled
+
     def run_patient(self, patient: str, patient_scans: list, dataset: dict, plans_manager: PlansManager,
                     configuration_manager: ConfigurationManager, dataset_json: Union[dict, str],
                     output_directory: str):
@@ -146,84 +173,27 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
             original_spacing = [properties['spacing'][i] for i in plans_manager.transpose_forward]
             patient_spacings[s] = original_spacing
         target_spacing = configuration_manager.spacing
+
         if isinstance(tracking_raw, dict):
-            tracking_preprocessed = {}
-            for l in tracking_raw.keys():
-                bl_point = tracking_raw[l]['bl_point']
-                fu_point_prop = tracking_raw[l]['fu_point_prop']
-                fu_point = tracking_raw[l]['fu_point']
-                img_bl = tracking_raw[l]['img_bl']
-                img_fu = tracking_raw[l]['img_fu']
-                bl_spacing = patient_spacings[img_bl]
-                fu_spacing = patient_spacings[img_fu]
-                # bl_point and fu_point are given as coordinates in the original image space.
-                # We need to convert them to the new space.
-                if not np.isnan(bl_point).any():
-                    bl_point = bl_point[::-1]
-                    bl_point = [bl_point[i] for i in plans_manager.transpose_forward]
-                    bl_point = [b * bl_spacing[i] / target_spacing[i]
-                                for i, b in enumerate(bl_point)]
-                if not np.isnan(fu_point_prop).any():
-                    fu_point_prop = fu_point_prop[::-1]
-                    fu_point_prop = [fu_point_prop[i] for i in plans_manager.transpose_forward]
-                    fu_point_prop = [f * fu_spacing[i] / target_spacing[i]
-                                    for i, f in enumerate(fu_point_prop)]
-                if not np.isnan(fu_point).any():
-                    fu_point = fu_point[::-1]
-                    fu_point = [fu_point[i] for i in plans_manager.transpose_forward]
-                    fu_point = [f * fu_spacing[i] / target_spacing[i]
-                                for i, f in enumerate(fu_point)]
-                tracking_preprocessed[l] = {
-                    'bl_point': bl_point,
-                    'fu_point_prop': fu_point_prop,
-                    'fu_point': fu_point,
-                    'img_bl': tracking_raw[l]['img_bl'],
-                    'img_fu': tracking_raw[l]['img_fu'],
-                    'merged_lesions': tracking_raw[l]['merged_lesions'],
-                }
-        elif isinstance(tracking_raw, list|tuple):
-            tracking_preprocessed = []
-            for scan_dict in tracking_raw:
-                scan_dict_preprocessed = {}
-                for l in scan_dict.keys():
-                    bl_point = scan_dict[l]['bl_point']
-                    fu_point_prop = scan_dict[l]['fu_point_prop']
-                    fu_point = scan_dict[l]['fu_point']
-                    img_bl = scan_dict[l]['img_bl']
-                    img_fu = scan_dict[l]['img_fu']
-                    bl_spacing = patient_spacings[img_bl]
-                    fu_spacing = patient_spacings[img_fu]
-                    # bl_point and fu_point are given as coordinates in the original image space.
-                    # We need to convert them to the new space.
-                    if not np.isnan(bl_point).any():
-                        bl_point = bl_point[::-1]
-                        bl_point = [bl_point[i] for i in plans_manager.transpose_forward]
-                        bl_point = [b * bl_spacing[i] / target_spacing[i]
-                                    for i, b in enumerate(bl_point)]
-                    if not np.isnan(fu_point_prop).any():
-                        fu_point_prop = fu_point_prop[::-1]
-                        fu_point_prop = [fu_point_prop[i] for i in plans_manager.transpose_forward]
-                        fu_point_prop = [f * fu_spacing[i] / target_spacing[i]
-                                        for i, f in enumerate(fu_point_prop)]
-                    if not np.isnan(fu_point).any():
-                        fu_point = fu_point[::-1]
-                        fu_point = [fu_point[i] for i in plans_manager.transpose_forward]
-                        fu_point = [f * fu_spacing[i] / target_spacing[i]
-                                    for i, f in enumerate(fu_point)]
-                    scan_dict_preprocessed[l] = {
-                        'bl_point': bl_point,
-                        'fu_point_prop': fu_point_prop,
-                        'fu_point': fu_point,
-                        'img_bl': scan_dict[l]['img_bl'],
-                        'img_fu': scan_dict[l]['img_fu'],
-                        'merged_lesions': scan_dict[l]['merged_lesions'],
-                    }
-                tracking_preprocessed.append(scan_dict_preprocessed)
+            tracking_preprocessed = self._resample_tracking(tracking_raw, patient_spacings, plans_manager,
+                                                            target_spacing)
+        elif isinstance(tracking_raw, (list, tuple)):
+            tracking_preprocessed = [self._resample_tracking(scan_dict, patient_spacings, plans_manager,
+                                                             target_spacing) for scan_dict in tracking_raw]
         else:
             raise ValueError(f"Unexpected format for tracking data: {type(tracking_raw)}")
+
         save_json(tracking_preprocessed, join(output_directory, f'{patient}.json'), sort_keys=False)
         save_json(tracking_preprocessed, join(os_split_path(output_directory)[0], "gt_segmentations", f'{patient}.json'),
                   sort_keys=False)
+
+    def _prepare_run(self, dataset_name: str, output_directory: str) -> dict:
+        shutil.copy(join(LongiSeg_raw, dataset_name, "patientsTr.json"), join(output_directory, "patientsTr.json"))
+        self.tracking = load_json(join(LongiSeg_raw, dataset_name, "trackingTr.json"))
+        return load_json(join(output_directory, "patientsTr.json"))
+
+    def _finalize_run(self, patients: dict, results: list, output_directory: str) -> None:
+        pass
 
     def run(self, dataset_name_or_id: Union[int, str], configuration_name: str, plans_identifier: str,
             num_processes: int):
@@ -243,7 +213,6 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
 
         if self.verbose:
             print(f'Preprocessing the following configuration: {configuration_name}')
-        if self.verbose:
             print(configuration_manager)
 
         dataset_json_file = join(LongiSeg_preprocessed, dataset_name, 'dataset.json')
@@ -256,12 +225,8 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
 
         maybe_mkdir_p(output_directory)
 
-        shutil.copy(join(LongiSeg_raw, dataset_name, "patientsTr.json"), join(output_directory, "patientsTr.json"))
-
         dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
-
-        patients = load_json(join(output_directory, "patientsTr.json"))
-        self.tracking = load_json(join(LongiSeg_raw, dataset_name, "trackingTr.json"))
+        patients = self._prepare_run(dataset_name, output_directory)
 
         # multiprocessing magic.
         r = []
@@ -287,13 +252,13 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
                                            'an error message, out of RAM is likely the problem. In that case '
                                            'reducing the number of workers might help')
                     done = [i for i in remaining if r[i].ready()]
-                    # get done so that errors can be raised
-                    _ = [r[i].get() for i in done]
-                    for _ in done:
-                        r[_].get()  # allows triggering errors
+                    for i in done:
+                        r[i].get()  # allows triggering errors
                         pbar.update()
                     remaining = [i for i in remaining if i not in done]
                     sleep(0.1)
+
+        self._finalize_run(patients, r, output_directory)
 
     @staticmethod
     def _sample_foreground_locations(seg: np.ndarray, seed: int = 1234, verbose: bool = False):
@@ -306,11 +271,11 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
         bboxs = stats["bounding_boxes"]
         voxel_counts = stats["voxel_counts"]
         class_locs = {}
-        for i, bbox in enumerate(bboxs[1:], 1):
-            if voxel_counts[i] == 0:
+        for label, bbox in enumerate(bboxs[1:], 1):
+            if voxel_counts[label] == 0:
                 continue
-            dil_bbox = tuple(slice(max(0, b.start - 1), min(seg.shape[i+1], b.stop + 1)) for i, b in enumerate(bbox))
-            seg_slice = seg[(0, *dil_bbox)] == i
+            dil_bbox = tuple(slice(max(0, b.start - 1), min(seg.shape[d + 1], b.stop + 1)) for d, b in enumerate(bbox))
+            seg_slice = seg[(0, *dil_bbox)] == label
             seg_edt = edt.edt(seg_slice)
             coords = np.argwhere(seg_slice)
             edt_values = seg_edt[seg_slice]
@@ -321,7 +286,7 @@ class LongiSegTrackingPreprocessor(LongiSegPreprocessor):
             shifted_coords = selected_coords + np.array([b.start for b in dil_bbox])
             # add trailing zero to all shifted coordinates to make them 4D
             full_coords = np.concatenate((np.zeros((len(shifted_coords), 1)), shifted_coords), axis=1)
-            class_locs[i] = {
+            class_locs[label] = {
                 'coords': full_coords,
                 'edt_values': selected_edt_values
             }
@@ -345,78 +310,16 @@ class LongiSegTrackingPretrainingPreprocessor(LongiSegTrackingPreprocessor):
                 lesions = lesions.intersection(set(props['class_locations'].keys()))
         return bool(lesions)
 
-    def run(self, dataset_name_or_id: Union[int, str], configuration_name: str, plans_identifier: str,
-            num_processes: int):
-        """
-        data identifier = configuration name in plans. EZ.
-        """
-        dataset_name = maybe_convert_to_dataset_name(dataset_name_or_id)
+    def _prepare_run(self, dataset_name: str, output_directory: str) -> dict:
+        return load_json(join(LongiSeg_raw, dataset_name, "patientsTr.json"))
 
-        assert isdir(join(LongiSeg_raw, dataset_name)), "The requested dataset could not be found in LongiSeg_raw"
-
-        plans_file = join(LongiSeg_preprocessed, dataset_name, plans_identifier + '.json')
-        assert isfile(plans_file), "Expected plans file (%s) not found. Run corresponding nnUNet_plan_experiment " \
-                                   "first." % plans_file
-        plans = load_json(plans_file)
-        plans_manager = PlansManager(plans)
-        configuration_manager = plans_manager.get_configuration(configuration_name)
-
-        if self.verbose:
-            print(f'Preprocessing the following configuration: {configuration_name}')
-        if self.verbose:
-            print(configuration_manager)
-
-        dataset_json_file = join(LongiSeg_preprocessed, dataset_name, 'dataset.json')
-        dataset_json = load_json(dataset_json_file)
-
-        output_directory = join(LongiSeg_preprocessed, dataset_name, configuration_manager.data_identifier)
-
-        if isdir(output_directory):
-            shutil.rmtree(output_directory)
-
-        maybe_mkdir_p(output_directory)
-
-        dataset = get_filenames_of_train_images_and_targets(join(LongiSeg_raw, dataset_name), dataset_json)
-
-        patients = load_json(join(LongiSeg_raw, dataset_name, "patientsTr.json"))
-
-        # multiprocessing magic.
-        r = []
-        with multiprocessing.get_context("spawn").Pool(num_processes) as p:
-            remaining = list(range(len(patients.keys())))
-            # p is pretty nifti. If we kill workers they just respawn but don't do any work.
-            # So we need to store the original pool of workers.
-            workers = [j for j in p._pool]
-            for patient, patient_scans in patients.items():
-                r.append(p.starmap_async(self.run_patient,
-                                         ((patient, patient_scans, dataset, plans_manager, configuration_manager,
-                                           dataset_json, output_directory),)))
-
-            with tqdm(desc=None, total=len(patients.keys()), disable=self.verbose) as pbar:
-                while len(remaining) > 0:
-                    all_alive = all([j.is_alive() for j in workers])
-                    if not all_alive:
-                        raise RuntimeError('Some background worker is 6 feet under. Yuck. \n'
-                                           'OK jokes aside.\n'
-                                           'One of your background processes is missing. This could be because of '
-                                           'an error (look for an error message) or because it was killed '
-                                           'by your OS due to running out of RAM. If you don\'t see '
-                                           'an error message, out of RAM is likely the problem. In that case '
-                                           'reducing the number of workers might help')
-                    done = [i for i in remaining if r[i].ready()]
-                    # get done so that errors can be raised
-                    _ = [r[i].get() for i in done]
-                    for _ in done:
-                        r[_].get()  # allows triggering errors
-                        pbar.update()
-                    remaining = [i for i in remaining if i not in done]
-                    sleep(0.1)
-
+    def _finalize_run(self, patients: dict, results: list, output_directory: str) -> None:
         patients_filtered = dict()
-        for patient, i in zip(patients.keys(), r):
-            if i.get()[0]:
+        for patient, res in zip(patients.keys(), results):
+            if res.get()[0]:
                 patients_filtered[patient] = patients[patient]
             else:
-                print(f"Deleting patient {patient} because it has no lesions with coordinates in both follow-up and baseline data.")
+                print(f"Deleting patient {patient} because it has no lesions with coordinates in both follow-up "
+                      f"and baseline data.")
 
         save_json(patients_filtered, join(output_directory, "patientsTr.json"), sort_keys=False)

@@ -1,10 +1,6 @@
 from __future__ import annotations
 import multiprocessing
 import os
-from typing import List
-from pathlib import Path
-from warnings import warn
-
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
