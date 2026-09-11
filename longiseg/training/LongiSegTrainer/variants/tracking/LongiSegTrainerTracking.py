@@ -386,7 +386,7 @@ class LongiSegTrainerTracking(LongiSegTrainerPrimed):
 
             results = []
 
-            for i, p in enumerate(dataset_val.patients):
+            for patient_idx, p in enumerate(dataset_val.patients):
                 self.print_to_log_file(f"Predicting patient {p}")
                 for fu_data, _, bl_data, bl_seg, _, properties in dataset_val.load_for_inference(p):
                     proceed = not check_workers_alive_and_busy(segmentation_export_pool, worker_list, results,
@@ -500,7 +500,7 @@ class LongiSegTrainerTracking(LongiSegTrainerPrimed):
                     #      self.dataset_json, output_filename_truncated, save_probabilities)
 
                 # if we don't barrier from time to time we will get nccl timeouts for large datasets. Yuck.
-                if self.is_ddp and i < last_barrier_at_idx and (i + 1) % 4 == 0:
+                if self.is_ddp and patient_idx < last_barrier_at_idx and (patient_idx + 1) % 4 == 0:
                     dist.barrier()
 
             _ = [r.get() for r in results]
