@@ -48,6 +48,9 @@ By default, LongiSeg uses the `LongiSegTrainer`, which integrates the temporal d
 - `nnUNetTrainerNoLongi`: A modified `nnUNetTrainer` where training data is split **at the patient level** instead of per scan. (*non-longitudinal baseline*)
 - `LongiSegTrainerDiffWeighting`: A longitudinal trainer that incorporates the **Difference Weighting Block** for temporal feature fusion.
 - `LongiSegTrainerRP`, `LongiSegTrainerDiffWeightingRP`: longitudinal trainer with randomly sampled instead of fixed prior scan of the same patient (c.f. [longi_dataset](../longiseg/training/dataloading/longi_dataset.py#L149-L153))
+- `LongiSegTrainerPrimed`: a longitudinal trainer that additionally primes the network with the segmentation of the prior scan.
+
+For the **lesion tracking** trainers introduced with LongiSeg 2.0, see the [lesion tracking documentation](lesion_tracking.md).
 
 Other options for training are available as well (`LongiSeg_train -h`).
 
