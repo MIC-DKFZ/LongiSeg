@@ -1,6 +1,6 @@
 import multiprocessing
 from copy import deepcopy
-from typing import Tuple, List, Union
+from typing import Dict, Iterable, List, Tuple, Union
 
 import numpy as np
 from batchgenerators.utilities.file_and_folder_operations import subfiles, join, save_json, load_json
@@ -16,16 +16,6 @@ from longiseg.evaluation.metrics.tracking_metrics import get_fp_volume, get_fn_v
 
 def label_or_region_to_key(label_or_region: Union[int, Tuple[int]]):
     return str(label_or_region)
-
-
-def key_to_label_or_region(key: str):
-    try:
-        return int(key)
-    except ValueError:
-        key = key.replace('(', '')
-        key = key.replace(')', '')
-        split = key.split(',')
-        return tuple([int(i) for i in split if len(i) > 0])
 
 
 def save_summary_json(results: dict, output_file: str):
@@ -45,66 +35,81 @@ def save_summary_json(results: dict, output_file: str):
     save_json(results_converted, output_file, sort_keys=True)
 
 
-def load_summary_json(filename: str):
-    results = load_json(filename)
-    # convert keys in mean metrics
-    results['mean'] = {key_to_label_or_region(k): results['mean'][k] for k in results['mean'].keys()}
-    # convert metric_per_case
-    for i in range(len(results["metric_per_case"])):
-        results["metric_per_case"][i]['metrics'] = \
-            {key_to_label_or_region(k): results["metric_per_case"][i]['metrics'][k]
-             for k in results["metric_per_case"][i]['metrics'].keys()}
-    return results
+def scan_dicts_from_patient_tracking(tracking: Union[dict, list], source: str) -> List[dict]:
+    scan_dicts = tracking if isinstance(tracking, list) else [tracking]
+    for scan_dict in scan_dicts:
+        for lesion, info in scan_dict.items():
+            if not isinstance(info, dict) or "img_fu" not in info:
+                raise RuntimeError(f"{source} is not a valid tracking file: entry {lesion} has no 'img_fu'.")
+    return scan_dicts
 
 
-def labels_to_list_of_regions(labels: List[int]):
-    return [(i,) for i in labels]
+def scan_dicts_from_dataset_tracking(tracking: dict, source: str) -> List[dict]:
+    return [scan_dict for patient, patient_tracking in tracking.items()
+            for scan_dict in scan_dicts_from_patient_tracking(patient_tracking, f"{source} (patient {patient})")]
 
 
-def region_or_label_to_mask(segmentation: np.ndarray, region_or_label: Union[int, Tuple[int, ...]]) -> np.ndarray:
-    if np.isscalar(region_or_label):
-        return segmentation == region_or_label
-    else:
-        mask = np.zeros_like(segmentation, dtype=bool)
-        for r in region_or_label:
-            mask[segmentation == r] = True
-    return mask
+def index_lesions_by_follow_up(scan_dicts: List[dict]) -> Dict[str, dict]:
+    lesions_per_scan = {}
+    for scan_dict in scan_dicts:
+        for lesion, info in scan_dict.items():
+            lesions_per_scan.setdefault(info["img_fu"], {})[lesion] = info
+    return lesions_per_scan
 
 
-def compute_metrics(reference_file: str, prediction_files: List[str], tracking_file: str, image_reader_writer: BaseReaderWriter,
-                    file_ending: str, ignore_label: int = None) -> dict:
+def load_lesions_per_scan(folder_ref: str, tracking_file: str = None) -> Dict[str, dict]:
+    if tracking_file is not None:
+        return index_lesions_by_follow_up(scan_dicts_from_dataset_tracking(load_json(tracking_file), tracking_file))
+    tracking_files = subfiles(folder_ref, suffix='.json', join=True)
+    if len(tracking_files) == 0:
+        raise RuntimeError(f"Did not find any tracking json in {folder_ref}. When evaluating predictions that were "
+                           f"not made during training, pass the tracking file of the dataset explicitly.")
+    return index_lesions_by_follow_up([scan_dict for f in tracking_files
+                                       for scan_dict in scan_dicts_from_patient_tracking(load_json(f), f)])
+
+
+def find_prediction_files(folder_pred: str, predictions: set, case_name: str, lesions: Iterable,
+                          file_ending: str) -> Dict[int, str]:
+    pred_files = {}
+    for lesion in lesions:
+        for name in (f"{case_name}_{lesion}{file_ending}", f"{case_name}_lesion_{lesion}{file_ending}"):
+            if name in predictions:
+                pred_files[int(lesion)] = join(folder_pred, name)
+                break
+    return pred_files
+
+
+def compute_metrics(reference_file: str, pred_files: Dict[int, str], tracked_lesions: dict,
+                    image_reader_writer: BaseReaderWriter, ignore_label: int = None) -> dict:
     # load images
-    seg_ref, seg_ref_dict = image_reader_writer.read_seg(reference_file)
-    spacing = seg_ref_dict['spacing']
-    distance_threshold = 1
+    seg_ref, _ = image_reader_writer.read_seg(reference_file)
 
     ignore_mask = seg_ref == ignore_label if ignore_label is not None else None
 
     results = {}
     results['reference_file'] = reference_file
-    results['prediction_files'] = prediction_files
+    results['prediction_files'] = sorted(pred_files.values())
     results['metrics'] = {}
 
-    tracking_json = load_json(tracking_file)
-
     skip = []
-    for lesion in tracking_json.keys():
-        if not isinstance(tracking_json[lesion]["fu_point_prop"], list):
+    for lesion, info in tracked_lesions.items():
+        if not isinstance(info["fu_point_prop"], list):
             continue
-        merged = tracking_json[lesion]["merged_lesions"]
+        merged = info["merged_lesions"]
         lesion = int(lesion)
         if lesion in skip:
             continue
         skip.extend(merged)
         if merged[0] == 0:
-            pred_files = [f for f in prediction_files if f.endswith(f"_{lesion}{file_ending}")]
+            merged_here = [lesion]
         else:
-            pred_files = [f for f in prediction_files if any([f.endswith(f"_{m}{file_ending}") for m in merged])]
-        if len(pred_files) == 0:
+            merged_here = merged
+        files_here = [pred_files[m] for m in merged_here if m in pred_files]
+        if len(files_here) == 0:
             # lesion is not in the current scan
             continue
         seg_pred = None
-        for pf in pred_files:
+        for pf in files_here:
             if seg_pred is None:
                 seg_pred, _ = image_reader_writer.read_seg(pf)
             else:
@@ -116,14 +121,17 @@ def compute_metrics(reference_file: str, prediction_files: List[str], tracking_f
             mask_ref = np.where(np.isin(seg_ref[0], merged), True, False)
         mask_pred = seg_pred[0].astype(np.bool_)
         dice, recall, precision = compute_volumetric_metrics(mask_ref, mask_pred, ignore_mask)
-        fn_volume = get_fn_volume(mask_ref, mask_pred)
-        fp_volume = get_fp_volume(mask_ref, mask_pred)
-        results['metrics'][lesion] = {}
-        results['metrics'][lesion]['Dice'] = dice
-        results['metrics'][lesion]['Recall'] = recall
-        results['metrics'][lesion]['Precision'] = precision
-        results['metrics'][lesion]['FN_volume'] = fn_volume
-        results['metrics'][lesion]['FP_volume'] = fp_volume
+        results['metrics'][lesion] = {
+            'Dice': dice,
+            'Recall': recall,
+            'Precision': precision,
+            'FN_volume': get_fn_volume(mask_ref, mask_pred),
+            'FP_volume': get_fp_volume(mask_ref, mask_pred),
+        }
+
+    if len(results['metrics']) == 0:
+        raise RuntimeError(f"No tracked lesion of {reference_file} could be evaluated. Please check that the "
+                           f"predictions and the tracking info belong to this dataset.")
 
     results["metrics"]["mean"] = {
         m: np.nanmean([results['metrics'][r][m] for r in results['metrics'].keys() if r != 'mean'])
@@ -135,35 +143,41 @@ def compute_metrics(reference_file: str, prediction_files: List[str], tracking_f
 def compute_metrics_on_folder(folder_ref: str, folder_pred: str, output_file: str,
                               image_reader_writer: BaseReaderWriter,
                               file_ending: str,
-                              regions_or_labels: Union[List[int], List[Union[int, Tuple[int, ...]]]],
                               ignore_label: int = None,
                               num_processes: int = default_num_processes,
-                              chill: bool = True) -> dict:
+                              tracking_file: str = None) -> dict:
     """
     output_file must end with .json; can be None
     """
     if output_file is not None:
         assert output_file.endswith('.json'), 'output_file should end with .json'
-    files_ref_all = subfiles(folder_ref, suffix=file_ending, join=False)
-    files_pred_all = subfiles(folder_pred, suffix=file_ending, join=False)
+
+    lesions_per_scan = load_lesions_per_scan(folder_ref, tracking_file)
+
+    predictions = set(subfiles(folder_pred, suffix=file_ending, join=False))
     files_ref = []
-    files_pred = []
-    tracking_files = []
-    for ref_file in files_ref_all:
+    all_pred_files = []
+    all_tracked_lesions = []
+    for ref_file in subfiles(folder_ref, suffix=file_ending, join=False):
         case_name = ref_file[:-len(file_ending)]
-        pred_cases = sorted([j[:-len(file_ending)] for j in files_pred_all if j.startswith(case_name)], key=lambda x: int(x.split("_")[-1]))
-        if pred_cases:
-            files_ref.append(join(folder_ref, ref_file))
-            files_pred.append([join(folder_pred, j + file_ending) for j in pred_cases])
-            tracking_files.append(join(folder_ref, case_name.split("_FU_")[0] + ".json"))
+        tracked_lesions = lesions_per_scan.get(case_name)
+        if tracked_lesions is None:
+            continue
+        pred_files = find_prediction_files(folder_pred, predictions, case_name, tracked_lesions.keys(), file_ending)
+        if len(pred_files) == 0:
+            continue
+        files_ref.append(join(folder_ref, ref_file))
+        all_pred_files.append(pred_files)
+        all_tracked_lesions.append(tracked_lesions)
+
+    if len(files_ref) == 0:
+        raise RuntimeError(f"Did not find any prediction in {folder_pred} matching a reference in {folder_ref}.")
 
     with multiprocessing.get_context("spawn").Pool(num_processes) as pool:
-        # for i in list(zip(files_ref, files_pred, [image_reader_writer] * len(files_pred), [regions_or_labels] * len(files_pred), [ignore_label] * len(files_pred))):
-        #     compute_metrics(*i)
         results = pool.starmap(
             compute_metrics,
-            list(zip(files_ref, files_pred, tracking_files, [image_reader_writer] * len(files_pred),
-                     [file_ending] * len(files_pred), [ignore_label] * len(files_pred)))
+            list(zip(files_ref, all_pred_files, all_tracked_lesions,
+                     [image_reader_writer] * len(files_ref), [ignore_label] * len(files_ref)))
         )
 
     # mean metric per class
@@ -179,14 +193,13 @@ def compute_metrics_on_folder(folder_ref: str, folder_pred: str, output_file: st
     if output_file is not None:
         save_summary_json(result, output_file)
     return result
-    # print('DONE')
 
 
-def compute_metrics_on_folder2(folder_ref: str, folder_pred: str, dataset_json_file: str, 
+def compute_metrics_on_folder2(folder_ref: str, folder_pred: str, dataset_json_file: str,
                                plans_file: str,
+                               tracking_file: str,
                                output_file: str = None,
-                               num_processes: int = default_num_processes,
-                               chill: bool = False):
+                               num_processes: int = default_num_processes):
     dataset_json = load_json(dataset_json_file)
     # get file ending
     file_ending = dataset_json['file_ending']
@@ -200,16 +213,15 @@ def compute_metrics_on_folder2(folder_ref: str, folder_pred: str, dataset_json_f
         output_file = join(folder_pred, 'longi_summary.json')
 
     lm = PlansManager(plans_file).get_label_manager(dataset_json)
-    compute_metrics_on_folder(folder_ref, folder_pred, output_file, rw, file_ending,
-                              lm.foreground_regions if lm.has_regions else lm.foreground_labels, lm.ignore_label,
-                              num_processes, chill=chill)
+    compute_metrics_on_folder(folder_ref, folder_pred, output_file, rw, file_ending, lm.ignore_label, num_processes,
+                              tracking_file)
 
 
-if __name__ == "__main__":
+def evaluate_tracking_folder_entry_point():
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('gt_folder', type=str, help='folder with gt segmentations')
-    parser.add_argument('pred_folder', type=str, help='folder with predicted segmentations')
+    parser.add_argument('pred_folder', type=str, help='folder with predicted segmentations, one file per lesion')
     parser.add_argument('-djfile', type=str, required=True,
                         help='dataset.json file')
     parser.add_argument('-pfile', type=str, required=True,
@@ -218,7 +230,11 @@ if __name__ == "__main__":
                         help='Output file. Optional. Default: pred_folder/longi_summary.json')
     parser.add_argument('-np', type=int, required=False, default=default_num_processes,
                         help=f'number of processes used. Optional. Default: {default_num_processes}')
-    parser.add_argument('--chill', action='store_true', help='dont crash if folder_pred does not have all files that are present in folder_gt')
+    parser.add_argument('-tfile', type=str, required=True,
+                        help='tracking json of the dataset, the same file that was passed to LongiSeg_predict_tracking')
     args = parser.parse_args()
-    compute_metrics_on_folder2(args.gt_folder, args.pred_folder, args.djfile, args.pfile,
-                                     args.o, args.np, chill=args.chill)
+    compute_metrics_on_folder2(args.gt_folder, args.pred_folder, args.djfile, args.pfile, args.tfile, args.o, args.np)
+
+
+if __name__ == "__main__":
+    evaluate_tracking_folder_entry_point()

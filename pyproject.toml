@@ -80,6 +80,8 @@ LongiSeg_train = "longiseg.run.run_training:run_training_longi_entry"
 LongiSeg_predict_from_modelfolder = "longiseg.inference.predict_from_raw_data_longi:predict_longi_entry_point_modelfolder"
 LongiSeg_predict = "longiseg.inference.predict_from_raw_data_longi:predict_longi_entry_point"
 LongiSeg_evaluate_folder = "longiseg.evaluation.evaluate_predictions_longi:evaluate_longi_folder_entry_point"
+LongiSeg_predict_tracking = "longiseg.inference.tracking_inference:tracking_entry_point"
+LongiSeg_evaluate_tracking = "longiseg.evaluation.evaluate_predictions_tracking:evaluate_tracking_folder_entry_point"
 
 [project.optional-dependencies]
 dev = [

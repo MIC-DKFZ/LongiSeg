@@ -403,7 +403,7 @@ class LongiSegTrainerTracking(LongiSegTrainerPrimed):
                     fu_point = [int(i) for i in properties['fu_point']]
 
                     fu_img = properties['fu_img']
-                    output_filename_truncated = join(validation_output_folder, f"{fu_img}_{bl_lesion}")
+                    output_filename_truncated = join(validation_output_folder, f"{fu_img}_lesion_{bl_lesion}")
                     if os.path.exists(output_filename_truncated + self.dataset_json['file_ending']):
                         continue
 
@@ -493,9 +493,7 @@ class LongiSegTrainerTracking(LongiSegTrainerPrimed):
                                                 join(validation_output_folder, 'longi_summary.json'),
                                                 self.plans_manager.image_reader_writer_class(),
                                                 self.dataset_json["file_ending"],
-                                                self.label_manager.foreground_regions if self.label_manager.has_regions else
-                                                self.label_manager.foreground_labels,
-                                                self.label_manager.ignore_label, chill=True,
+                                                self.label_manager.ignore_label,
                                                 num_processes=default_num_processes * dist.get_world_size() if
                                                 self.is_ddp else default_num_processes)
             self.print_to_log_file("Validation complete", also_print_to_console=True)
