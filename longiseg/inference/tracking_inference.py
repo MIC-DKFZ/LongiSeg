@@ -14,7 +14,7 @@ from batchgenerators.utilities.file_and_folder_operations import load_json
 
 from longiseg.inference.predict_from_raw_data_longi import LongiSegPredictor
 from longiseg.training.dataloading.utils import generated_sparse_to_dense_point_rescaled_gauss
-from longiseg.utilities.tracking_utils import compute_paired_patch_bboxes, crop_bbox_to_shape
+from longiseg.tracking.patch_extraction import compute_paired_patch_bboxes, crop_bbox_to_shape
 
 
 def _to_torch_pad(padding: List[tuple]) -> tuple:

@@ -27,7 +27,7 @@ from longiseg.utilities.crossval_split import generate_crossval_split_longi
 from longiseg.utilities.default_n_proc_DA import get_allowed_n_proc_DA
 from longiseg.utilities.file_path_utilities import check_workers_alive_and_busy
 from longiseg.utilities.label_handling.label_handling import determine_num_input_channels
-from longiseg.utilities.tracking_utils import compute_paired_patch_bboxes, crop_bbox_to_shape
+from longiseg.tracking.patch_extraction import compute_paired_patch_bboxes, crop_bbox_to_shape
 from longiseg.training.dataloading.utils import generated_sparse_to_dense_point_rescaled_gauss
 
 from longiseg.training.LongiSegTrainer.variants.longitudinal.LongiSegTrainerPrimed import LongiSegTrainerPrimed
