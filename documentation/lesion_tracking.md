@@ -88,6 +88,71 @@ per lesion and does not rely on the prompt sitting exactly at a centroid. The fo
 voxel of the baseline lesion, weighted the same way. `fu_point` is used whenever no propagated point exists, so it
 matters for training as well, not just for verified inference.
 
+## Preparing the tracking file
+
+`LongiSeg_prepare_tracking` fills the points of a tracking json in, so that the minimal input you have to write
+yourself is small. It has two independent steps, and existing values are never overwritten, so the steps can be run
+separately and an interrupted run can simply be repeated.
+
+**From the reference segmentations.** The minimal input is the scan pairs alone:
+
+    {
+        "patient_1": {"img_bl": "patient_1_scan_0", "img_fu": "patient_1_scan_1"},
+        "patient_2": [{"img_bl": "patient_2_scan_0", "img_fu": "patient_2_scan_1"},
+                      {"img_bl": "patient_2_scan_1", "img_fu": "patient_2_scan_2"}]
+    }
+
+```bash
+LongiSeg_prepare_tracking tracking.json -djfile /path/to/dataset.json \
+    -labels /path/to/labelsTr -images /path/to/imagesTr
+```
+
+`-labels` reads the lesions from the segmentation of the baseline scan and fills in `bl_point` and `fu_point` as
+their centroids, and `merged_lesions` as the label if it is still present in the follow-up scan and `[0]` otherwise.
+`-images` then fills in `fu_point_prop` by registering the two scans.
+
+The registration refines each scan pair with instance optimization. `--fast` skips that refinement, giving a faster
+but potentially less precise registration.
+
+**From clinician placed points.** Give the lesions and their `bl_point` yourself and run only the registration step:
+
+    {
+        "patient_1": {
+            "1": {"img_bl": "patient_1_scan_0", "img_fu": "patient_1_scan_1", "bl_point": [x, y, z]}
+        }
+    }
+
+```bash
+LongiSeg_prepare_tracking tracking.json -djfile /path/to/dataset.json -images /path/to/imagesTr
+```
+
+`fu_point` is left as `NaN` for the clinician to fill in after verifying the propagated point.
+
+Registration uses [uniGradICON](https://github.com/uncbiag/uniGradICON), an optional dependency installed by running
+`pip install -e .[tracking]` in your LongiSeg clone. To use a different registration, implement `PointPropagator` and
+`PairRegistration` from `longiseg.tracking.registration` and pass it to `prepare_tracking`.
+
+### Reading and writing the tracking file from your own code
+
+`longiseg.tracking.tracking_file` is the interface for tools that work on a tracking file, for example an
+interactive viewer in which a clinician verifies the propagated points:
+
+```python
+from longiseg.tracking.tracking_file import TrackingFile
+
+tracking = TrackingFile.load("tracking.json")
+for lesion in tracking.needing_verification():          # has fu_point_prop, but no verified fu_point yet
+    bl = lesion.bl_image_file("/path/to/imagesTr", ".nii.gz")
+    fu = lesion.fu_image_file("/path/to/imagesTr", ".nii.gz")
+    show(bl, fu, lesion.bl_point, lesion.fu_point_prop)  # your viewer
+    lesion.fu_point = ask_clinician()                    # writes through to the tracking file
+    tracking.save()                                      # atomic, safe to call after every lesion
+```
+
+A `LesionEntry` exposes `patient`, `lesion`, `label`, `img_bl`, `img_fu`, `scan_pair`, `merged_lesions`,
+`disappeared`, the three points and `needs_verification()`. `TrackingFile` iterates over the entries of all patients
+regardless of whether they store one scan pair or a list of them, and offers `by_scan_pair()` and `counts()`.
+
 ## Experiment planning and preprocessing
 
 Tracking needs its own fingerprint extractor and preprocessor. In contrast to the standard pipeline, images are
