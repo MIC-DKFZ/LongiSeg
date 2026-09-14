@@ -26,9 +26,13 @@ def insert_crop_into_image(
     Returns:
     - image: The original image with the crop reinserted at the specified location (modified in-place).
     """
-    # If the bounding box is None and shapes of image and crop are the same, return the crop directly
+    # If the bounding box is None and shapes of image and crop are the same, the crop already is the whole image
     if all([b is None for b in itertools.chain(*bbox)]) and image.shape==crop.shape:
-        return crop
+        if isinstance(image, torch.Tensor):
+            return torch.as_tensor(crop).to(image.dtype)
+        if isinstance(crop, torch.Tensor):
+            crop = crop.cpu().numpy()
+        return crop.astype(image.dtype, copy=False)
 
     # make sure bounding boxes are int and not uint. Otherwise we may get underflow
     bbox = int_bbox(bbox)
