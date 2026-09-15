@@ -1,13 +1,21 @@
 # Welcome to LongiSeg!
 
+<div align="center">
+
+[![arXiv](https://img.shields.io/badge/arXiv-2605.23118-B31B1B.svg)](https://arxiv.org/abs/2605.23118)&#160;
+[![arXiv](https://img.shields.io/badge/arXiv-2409.13416-B31B1B.svg)](https://arxiv.org/abs/2409.13416)&#160;
+[![GitHub](https://img.shields.io/badge/GitHub-LongiSeg-181717?logo=github&logoColor=white)](https://github.com/MIC-DKFZ/LongiSeg)&#160;
+[![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-PanTrack-yellow)](https://huggingface.co/datasets/mrokuss/PanTrack)&#160;
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)&#160;
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+
+</div>
+
 <img src="documentation/assets/LongiSeg.jpg" />
 
-## News: LongiSeg 2.0 for verified lesion tracking
+## 📰 News: LongiSeg 2.0 for verified lesion tracking
 
-[![arXiv](https://img.shields.io/badge/arXiv-2605.23118-B31B1B.svg)](https://arxiv.org/abs/2605.23118)
-[![Hugging Face Dataset](https://img.shields.io/badge/🤗%20Hugging%20Face-PanTrack-yellow.svg)](https://huggingface.co/datasets/mrokuss/PanTrack)
-
-Our work on longitudinal lesion tracking was early accepted at **MICCAI 2026** (top 9%) and won **1st place in the MICCAI autoPET IV challenge**.
+🎉 Our work on longitudinal lesion tracking was **early accepted at MICCAI 2026** (top 9%), selected for an **Oral presentation** and nominated for both the **Best Paper Award** and the **Young Scientist Award**. It also won **1st place in the MICCAI autoPET IV challenge**.
 
 LongiSeg 2.0 introduces **Verified Tracking**, a clinically safe paradigm for lesion follow-up that separates lesion retrieval from delineation instead of silently accepting fully automatic tracking results:
 
@@ -15,11 +23,21 @@ LongiSeg 2.0 introduces **Verified Tracking**, a clinically safe paradigm for le
 2. A clinician verifies or corrects the proposed point prompt.
 3. LongiSeg segments the lesion using the verified prompt and the baseline lesion appearance as longitudinal context.
 
+<img src="documentation/assets/longisegv2.gif" width="100%" />
+
 The model combines **early prompt fusion**, **latent temporal difference weighting** and **large-scale synthetic longitudinal pretraining**, so that it can draw on both the current scan and the prior lesion appearance when segmenting a lesion across timepoints. It sets a new state of the art in lesion tracking, and even its automatic tracking outperforms the verified tracking results of competing methods.
 
-We also release **PanTrack**, the first public longitudinal benchmark for pancreatic cancer lesion tracking, with **45 patients** and **161 CT scans** with temporally matched annotations of pancreatic tumors and selected liver metastases.
-
 👉 To train and run the tracking models yourself, see the [lesion tracking documentation](documentation/lesion_tracking.md).
+
+### 🥞 PanTrack: a public benchmark for pancreatic lesion tracking
+
+[![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-PanTrack-yellow.svg)](https://huggingface.co/datasets/mrokuss/PanTrack)
+
+<img src="documentation/assets/PanTrack.jpg" width="550" />
+
+Together with LongiSeg 2.0 we release **PanTrack**, the first public longitudinal benchmark for pancreatic cancer lesion tracking, with **45 patients** and **161 CT scans** with temporally matched annotations of pancreatic tumors and selected liver metastases.
+
+👉 Download it from [🤗 Hugging Face](https://huggingface.co/datasets/mrokuss/PanTrack). The layout of the tracking annotations is described in the [dataset format section](documentation/lesion_tracking.md#dataset-format).
 
 ## What is LongiSeg?
 LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
@@ -27,6 +45,14 @@ LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/M
 LongiSeg includes several methods for temporal feature merging, including the newly introduced [Difference Weighting Block](https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting). &nbsp; &nbsp;   [![arXiv](https://img.shields.io/badge/arXiv-2409.13416-B31B1B.svg)](https://arxiv.org/abs/2409.13416) \
 For more details on the underlying nnU-Net framework, visit the [nnU-Net repository](https://github.com/MIC-DKFZ/nnUNet).
 
+LongiSeg is the common framework behind our longitudinal segmentation work, and both papers can be trained and run from this repository:
+
+| Paper | Venue | What it adds to LongiSeg |
+| --- | --- | --- |
+| [Longitudinal segmentation of MS lesions via temporal Difference Weighting](https://arxiv.org/abs/2409.13416) | MICCAI 2024 | temporal feature merging across timepoints, including the Difference Weighting Block |
+| [Exploiting Longitudinal Context in Clinician-Verified Interactive Lesion Tracking](https://arxiv.org/abs/2605.23118) | MICCAI 2026 (Oral) | verified lesion tracking, prompt fusion, synthetic longitudinal pretraining, PanTrack |
+
+## 📄 Citation
 Please cite the following works when using LongiSeg in your research:  
 
 ```bibtex
@@ -43,16 +69,6 @@ Please cite the following works when using LongiSeg in your research:
   pages={64--74},
   year={2024},
   organization={Springer}
-}
-@article{isensee2021nnu,
-  title={nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation},
-  author={Isensee, Fabian and Jaeger, Paul F and Kohl, Simon AA and Petersen, Jens and Maier-Hein, Klaus H},
-  journal={Nature methods},
-  volume={18},
-  number={2},
-  pages={203--211},
-  year={2021},
-  publisher={Nature Publishing Group}
 }
 ```
 
@@ -102,6 +118,14 @@ For **verified lesion tracking** (LongiSeg 2.0), follow the [lesion tracking doc
 ## Compatibility with nnU-Net
 LongiSeg is fully compatible with nnU-Net and can be installed alongside it in the same environment. This allows users to seamlessly reuse existing nnU-Net structures, datasets, and preprocessing pipelines without modification.
 
+## 🗺️ Roadmap
+- [x] Longitudinal segmentation with temporal feature merging (MICCAI 2024)
+- [x] Clinician-verified interactive lesion tracking (MICCAI 2026)
+- [x] PanTrack benchmark release
+- [ ] **Viewer for interactive lesion tracking** — verify and correct propagated point prompts and inspect the resulting segmentations directly, coming up next 👀
+
+Something missing? Open an [issue](https://github.com/MIC-DKFZ/LongiSeg/issues) and let us know.
+
 ## Also check out: LesionLocator – Zero-Shot Tumor Tracking & Segmentation
 
 If you're working on **lesion or tumor segmentation and tracking**, make sure to also check out our **LesionLocator** framework, introduced at **CVPR 2025**:
@@ -117,6 +141,14 @@ LesionLocator and LongiSeg share a focus on **longitudinal analysis**, but with 
 - **LesionLocator** excels at **zero-shot generalization** and supports interactive & promptable workflows out of the box.
 
 Use them **together** to benchmark traditional vs. zero-shot approaches — or combine insights from both for even better longitudinal segmentation performance.
+
+## 📬 Contact
+For questions, issues, or collaborations, feel free to open an [issue](https://github.com/MIC-DKFZ/LongiSeg/issues) or contact:
+
+📧 yannick.kirchhoff@dkfz-heidelberg.de / maximilian.rokuss@dkfz-heidelberg.de
+
+## License
+LongiSeg is released under the [Apache License 2.0](LICENSE), the same license as the [nnU-Net](https://github.com/MIC-DKFZ/nnUNet) framework it is built on. Parts of this repository are derived from nnU-Net and keep their original copyright headers. The **PanTrack** dataset is distributed separately under the license stated on its [Hugging Face dataset card](https://huggingface.co/datasets/mrokuss/PanTrack).
 
 # Acknowledgements
 <img src="documentation/assets/HIDSS4Health_Logo_RGB.png" height="100px" />
