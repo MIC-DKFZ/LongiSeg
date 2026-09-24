@@ -5,7 +5,9 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2605.23118-B31B1B.svg)](https://arxiv.org/abs/2605.23118)&#160;
 [![arXiv](https://img.shields.io/badge/arXiv-2409.13416-B31B1B.svg)](https://arxiv.org/abs/2409.13416)&#160;
 [![GitHub](https://img.shields.io/badge/GitHub-LongiSeg-181717?logo=github&logoColor=white)](https://github.com/MIC-DKFZ/LongiSeg)&#160;
+[![Hugging Face Model](https://img.shields.io/badge/%F0%9F%A4%97%20Model-LongiTrack-yellow)](https://huggingface.co/ykirchhoff/LongiTrack)&#160;
 [![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Dataset-PanTrack-yellow)](https://huggingface.co/datasets/mrokuss/PanTrack)&#160;
+[![napari](https://badgen.net/badge/napari/plugin/80d1ff?icon=https://raw.githubusercontent.com/napari/napari/8b74cdfb205338a20a2e63dcbba048007ecd2309/src/napari/resources/logos/gradient-plain-light.svg)](https://github.com/MIC-DKFZ/LongiTrack-napari)&#160;
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)&#160;
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 
@@ -13,9 +15,21 @@
 
 <img src="documentation/assets/LongiSeg.jpg" />
 
-## 📰 News: LongiSeg 2.0 for verified lesion tracking
+**LongiSeg** is the longitudinal extension of [nnU-Net](https://github.com/MIC-DKFZ/nnUNet): one framework for segmentation across timepoints, housing our work on **temporal feature merging** (MICCAI 2024) and on **clinician-verified interactive lesion tracking** (MICCAI 2026, oral).
 
-🎉 Our work on longitudinal lesion tracking was **early accepted at MICCAI 2026** (top 9%), selected for an **Oral presentation** and nominated for both the **Best Paper Award** and the **Young Scientist Award**. It also won **1st place in the MICCAI autoPET IV challenge**.
+---
+
+## 📰 News
+
+- **09/2026**: 🖥️ **LongiTrack is out!** The trained model, an inference backend and an interactive **napari plugin** bring the whole verified tracking workflow into the viewer 👉 [Try it yourself](#-try-it-yourself-longitrack-in-napari)
+- **09/2026**: 🎤 Our tracking paper is an **Oral at MICCAI 2026** and nominated for the **Best Paper Award** and the **Young Scientist Award**. Find us at **Oral Session O4B** and **Poster Session 4**, we will also show a live demo!
+- **09/2026**: 🥇 First place in the **MICCAI autoPET IV challenge**
+- **06/2026**: 📄 *Exploiting Longitudinal Context in Clinician-Verified Interactive Lesion Tracking* was **early accepted at MICCAI 2026** (top 9%), together with the release of the **PanTrack** benchmark 👉 [PanTrack](#-pantrack-a-public-benchmark-for-pancreatic-lesion-tracking)
+- **10/2024**: 📄 *Longitudinal segmentation of MS lesions via temporal Difference Weighting* was presented at **MICCAI 2024**, and LongiSeg was released
+
+---
+
+## 🎯 LongiTrack: clinician-verified lesion tracking
 
 LongiSeg 2.0 introduces **Verified Tracking**, a clinically safe paradigm for lesion follow-up that separates lesion retrieval from delineation instead of silently accepting fully automatic tracking results:
 
@@ -29,6 +43,18 @@ The model combines **early prompt fusion**, **latent temporal difference weighti
 
 👉 To train and run the tracking models yourself, see the [lesion tracking documentation](documentation/lesion_tracking.md).
 
+### 🚀 Try it yourself: LongiTrack in napari
+
+Longitudinal lesion tracking should not be a black box, so we release the whole workflow, not just the paper:
+
+| | |
+| --- | --- |
+| 🧠 **Model** | The trained LongiTrack checkpoint on [🤗 Hugging Face](https://huggingface.co/ykirchhoff/LongiTrack), downloaded automatically on first use |
+| 🖥️ **[LongiTrack-napari](https://github.com/MIC-DKFZ/LongiTrack-napari)** | An interactive [napari](https://napari.org) plugin: click a lesion in the baseline scan, verify or drag the propagated point, and get the lesion segmented in both scans |
+| ⚙️ **[LongiTrack-backend](https://github.com/MIC-DKFZ/LongiTrack-backend)** | A standalone GPU service for model loading, registration and segmentation. It has no GUI of its own, so you can just as well build a viewer of your own against it |
+
+The backend runs locally or on a remote GPU server, which means you can drive **remote sessions from a Linux, macOS or even Windows laptop, from anywhere in the world** while the model work happens on the server.
+
 ### 🥞 PanTrack: a public benchmark for pancreatic lesion tracking
 
 [![Hugging Face Dataset](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-PanTrack-yellow.svg)](https://huggingface.co/datasets/mrokuss/PanTrack)
@@ -39,7 +65,7 @@ Together with LongiSeg 2.0 we release **PanTrack**, the first public longitudina
 
 👉 Download it from [🤗 Hugging Face](https://huggingface.co/datasets/mrokuss/PanTrack). The layout of the tracking annotations is described in the [dataset format section](documentation/lesion_tracking.md#dataset-format).
 
-## What is LongiSeg?
+# Back to the roots: What is LongiSeg?
 LongiSeg is an extension of the popular [nnU-Net framework](https://github.com/MIC-DKFZ/nnUNet), designed specifically for **longitudinal medical image segmentation**. By incorporating temporal information across multiple timepoints, LongiSeg enhances segmentation accuracy and consistency, making it a robust tool for analyzing medical imaging over time.
 
 LongiSeg includes several methods for temporal feature merging, including the newly introduced [Difference Weighting Block](https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting). &nbsp; &nbsp;   [![arXiv](https://img.shields.io/badge/arXiv-2409.13416-B31B1B.svg)](https://arxiv.org/abs/2409.13416) \
@@ -122,7 +148,8 @@ LongiSeg is fully compatible with nnU-Net and can be installed alongside it in t
 - [x] Longitudinal segmentation with temporal feature merging (MICCAI 2024)
 - [x] Clinician-verified interactive lesion tracking (MICCAI 2026)
 - [x] PanTrack benchmark release
-- [ ] **Viewer for interactive lesion tracking** — verify and correct propagated point prompts and inspect the resulting segmentations directly, coming up next 👀
+- [x] **Viewer for interactive lesion tracking**: the [LongiTrack napari plugin](https://github.com/MIC-DKFZ/LongiTrack-napari) and its [backend](https://github.com/MIC-DKFZ/LongiTrack-backend)
+- [ ] Front ends for other viewers (MITK, 3D Slicer) against the same backend 👀
 
 Something missing? Open an [issue](https://github.com/MIC-DKFZ/LongiSeg/issues) and let us know.
 
