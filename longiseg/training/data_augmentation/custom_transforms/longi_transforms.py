@@ -17,6 +17,9 @@ class MergeTransform(BasicTransform):
             del data_dict['segmentation_current'], data_dict['segmentation_prior']
         else:
             raise RuntimeError("MergeTransform requires 'segmentation_current' and 'segmentation_prior' in data_dict")
+        if data_dict.get('gauss_current') is not None and data_dict.get('gauss_prior') is not None:
+            data_dict['regression_target'] = self._apply_to_tensor(data_dict['gauss_current'], data_dict['gauss_prior'], **params)
+            del data_dict['gauss_current'], data_dict['gauss_prior']
         return data_dict
     
     def _apply_to_tensor(self, current: torch.Tensor, prior: torch.Tensor, **params) -> torch.Tensor:
@@ -36,6 +39,9 @@ class SplitTransform(BasicTransform):
             del data_dict['segmentation']
         else:
             raise RuntimeError("SplitTransform requires 'segmentation' in data_dict")
+        if data_dict.get('regression_target') is not None:
+            data_dict['gauss_current'], data_dict['gauss_prior'] = self._apply_to_tensor(data_dict['regression_target'], **params)
+            del data_dict['regression_target']
         return data_dict
     
     def _apply_to_tensor(self, tensor: torch.Tensor, **params) -> torch.Tensor:
