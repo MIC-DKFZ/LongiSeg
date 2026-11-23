@@ -1,6 +1,6 @@
 [project]
 name = "longiseg"
-version = "1.0.0"
+version = "1.0.1"
 requires-python = ">=3.10"
 description = "LongiSeg is a framework for longitudinal medical image segmentation built on nnU-Net."
 readme = "readme.md"
@@ -32,7 +32,7 @@ keywords = [
 dependencies = [
     "torch>=2.1.2",
     "acvl-utils>=0.2.3,<0.3",  # 0.3 may bring breaking changes. Careful!
-    "dynamic-network-architectures>=0.3.1,<0.4",  # 0.3.1 and lower are supported, 0.4 may have breaking changes. Let's be careful here
+    "dynamic-network-architectures>=0.3.1,<0.5",
     "tqdm",
     "dicom2nifti",
     "scipy",
@@ -54,7 +54,7 @@ dependencies = [
     "batchgeneratorsv2>=0.2",
     "einops",
     "blosc2>=3.0.0b1",
-    "difference-weighting @ git+https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting.git@v0.2.0"
+    "difference-weighting @ git+https://github.com/MIC-DKFZ/Longitudinal-Difference-Weighting.git@v0.2.1"
 ]
 
 [project.urls]
